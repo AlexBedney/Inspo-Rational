@@ -55,15 +55,15 @@ module.exports = {
         inject: "body",
         filename: "index.html",
       }),
-      /* new copyPlugin({
+      new copyPlugin({
         patterns: [
           {
-            from: path.resolve(__dirname, "src/images"),
-            to: path.resolve(__dirname, "dist/images"),
+            from: path.resolve(__dirname, "src/css"),
+            to: path.resolve(__dirname, "dist/css"),
           },
         ],
       }),
-      */
+      
     ],
 }
   
