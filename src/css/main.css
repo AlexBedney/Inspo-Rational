@@ -28,8 +28,17 @@ body {
   font-style: italic;
 }
 
-.option-dots {
+.quote-refresh {
   float:right;
+}
+
+.green-button {
+  background-color: rgb(35, 161, 35);
+  color: #e9e9e9;
+  border: 1px solid rgb(65, 177, 31);
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 5px;
 }
 
 .goal-list {
@@ -41,10 +50,6 @@ body {
 .goal-form {
   border: 2px solid #000;
   background-color: #dddddd;
-}
-
-.goal-field-lg {
-
 }
 
 .goal-name {
