@@ -83,10 +83,22 @@ body {
 .details {
   justify-content: flex-start;
 }
-  .details > div {
-    padding-left: 20px;
-  }
+.details > div {
+  padding-left: 20px;
+}
 
-  .details > div :first-child {
-    padding-left: 0;
-  }
+.details > div :first-child {
+  padding-left: 0;
+}
+
+/* Code for progress bar if we can get it to work */
+.myProgress {
+  width: 100%;
+  background-color: grey;
+}
+
+.myBar {
+  width: 1%;
+  height: 30px;
+  background-image: linear-gradient(bottom right, rgb(6, 173, 0), rgb(43, 255, 0));
+}
