@@ -7,12 +7,15 @@
 </head>
 <body>
     <div class="app-container" id="app-container">
-        <div class="quote-container">
-            <i class="bi bi-three-dots option-dots" id="quote-options"></i>
+        <div class="quote-container visually-hidden" id="quoteContainer">
+            <i class="bi bi-arrow-clockwise quote-refresh" id="quoteRefresh"></i>
             <h2 class="quote-body" id="quoteBody">"I cannot tell a lie. I cut down the cherry tree." - George Washington</h2>
         </div>
         <div class="goal-list">
-            <form class="goal-form" id="goal-form">
+            <div class="row">
+                <button class="green-button float-end m-1 ms-3 col-auto" id="addGoal"> Add A Goal + </button>
+            </div>
+            <form class="goal-form visually-hidden" id="goalForm">
                 <div class="row m-2">
                     <label class="col-2" for="title">Goal To Meet:</label>
                     <input class="col-lg-9 col-sm-8 col-7"
@@ -38,8 +41,11 @@
                     type="text" id="body" name="body"></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-success m-1">Create goal</button>
+                <button type="button" class="btn btn-success m-1" id="submitButton">Create goal</button>
+                <button type="reset" class="btn btn-secondary m-1">Clear goal</button>
             </form>
+
+            <div id="goalList"></div>
         </div>
   </div>
 

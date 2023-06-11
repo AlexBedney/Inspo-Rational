@@ -15,6 +15,7 @@ class Index {
             // Months start at 0
             let mm = today.getMonth() + 1;
             let dd = today.getDate();
+            let nextDd = today.getDate() + 1;
 
             if (dd < 10) dd = '0' + dd;
             if (mm < 10) mm = '0' + mm;
@@ -23,7 +24,7 @@ class Index {
                 {
                     title: "Create A New Goal",
                     startFrom: dd + "/" + mm + "/" + yyyy,
-                    endAt: (dd + 1) + "/" + mm + "/" + yyyy,
+                    endAt: nextDd + "/" + mm + "/" + yyyy,
                     body: "Create a new goal for myself to eventually reach, that would be really cool."
                 },
             ]
@@ -35,6 +36,10 @@ class Index {
         this.$addGoalBtn = document.getElementById("addGoal");
         this.$goalForm = document.getElementById("goalForm");
         this.$goalList = document.getElementById("goalList");
+        this.$onCarots = document.getElementsByName("onCarot");
+        this.$offCarots = document.getElementsByName("offCarot");
+        this.$goalDetails = document.getElementsByName("goalDetails");
+        this.$goalDelete = document.getElementsByName("deleteGoal");
 
         // Form fields
         this.$formTitle = document.getElementById("title");
@@ -47,7 +52,7 @@ class Index {
         this.hideForm = this.hideForm.bind(this);
         this.getStoicQuote = this.getStoicQuote.bind(this);
         this.initForm = this.initForm.bind(this);
-        this.creatGoal = this.creatGoal.bind(this);
+        this.createGoal = this.createGoal.bind(this);
 
         this.loadGoals();
         this.getStoicQuote();
@@ -76,7 +81,13 @@ class Index {
         this.$qteRfrsh.style.cursor = 'pointer';
         this.$qteRfrsh.onclick = this.getStoicQuote;
         this.$addGoalBtn.onclick = this.initForm;
-        this.$submitBtn.onclick = this.creatGoal;
+        this.$submitBtn.onclick = this.createGoal;
+
+        for (var index = 0; index < this.goals.length; index++) {
+            this.$goalDelete[index].onclick = this.deleteGoal.bind(this, this.goals[index]);
+            this.$onCarots[index].onclick = this.showDetails.bind(this, index);
+            this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
+        }
     }
 
     initForm() {
@@ -101,16 +112,15 @@ class Index {
     }
 
     generateGoalHtml(goal) {
-        console.log("running generategoalHtml");
         return `<div class="goal-form">
                 <div class="row m-2">
-                    <h5 class="col-6">Goal: ${goal.title}</h5>
-                    <h5 class="col-4">Starting from: ${goal.startFrom} to ${goal.endAt}</h5>
-                    <i class="bi bi-caret-left-fill col-1" id="onCarot"></i>
-                    <i class="bi bi-caret-down col-1 visually-hidden" id="offCarot"></i>
-                    <i class="bi bi-three-dots-vertical col-1" id="goalOptions"></i>
+                    <h5 class="col-5">Goal: ${goal.title}</h5>
+                    <h5 class="col-5">Starting from: ${goal.startFrom} to ${goal.endAt}</h5>
+                    <button class="btn btn-info col-1" name="onCarot"><i class="bi bi-caret-left-fill"></i></button>
+                    <button class="btn btn-secondary col-1 visually-hidden" name="offCarot"><i class="bi bi-caret-down"></i></button>
+                    <button class="btn btn-danger col-1" name="deleteGoal"><i class="bi bi-trash3-fill"></i></button>
                 </div>
-                <div class="row m-1 p-1 pe-3" style="background-color: #636363;" id="goalDetails">
+                <div class="row m-1 p-1 pe-3 visually-hidden" style="background-color: #636363;" name="goalDetails">
                     <div id="goalProgress">
                         <div id="currentProgress"></div>
                     </div>
@@ -119,7 +129,7 @@ class Index {
             </div>`;
     }
 
-    creatGoal() {
+    createGoal() {
         if(this.validateForm()) {
             const newGoal = {
                 title: this.$formTitle.value,
@@ -145,9 +155,9 @@ class Index {
             if (this.regBody.test(this.$formBody.value)) {
                 if (this.$formStart.value != null && this.$formEnd.value != null){
                     if (this.$formStart.value < this.$formEnd.value) {
-                        
-
-                        return true;
+                        //this.$formStart.value = this.convertDate(this.$formStart.value);
+                        //this.$formEnd.value = this.convertDate(this.$formEnd.value);
+                        return true;   
                     }
                 }
                 this.$formStart.classList.add("is-invalid");
@@ -162,6 +172,38 @@ class Index {
         }
 
         return false;
+    }
+
+    // currently not working so this and any calls are commented out
+    convertDate(dateInput) {
+        var year = dateInput.getFullYear();
+        var mon = dateInput.getMonth() + 1;
+        var day = dateInput.getDate();
+        if (day < 10) {
+            day = '0' + day;
+        }
+        if (mon < 10) {
+            mon = '0' + mon;
+        }
+
+        return day + "/" + mon + "/" + year;
+    }
+
+    deleteGoal(goal) {
+        this.goals.splice(goal, 1);
+        this.loadGoals();
+    }
+
+    showDetails(index) {
+        this.$goalDetails[index].classList.remove("visually-hidden");
+        this.$onCarots[index].classList.add("visually-hidden");
+        this.$offCarots[index].classList.remove("visually-hidden");
+    }
+
+    hideDetails(index) {
+        this.$goalDetails[index].classList.add("visually-hidden");
+        this.$onCarots[index].classList.remove("visually-hidden");
+        this.$offCarots[index].classList.add("visually-hidden");
     }
 }
 
