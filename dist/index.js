@@ -97,7 +97,7 @@ var Index = /*#__PURE__*/function () {
       };
 
       // CHANGE URL TO BE QUOTE_URL FROM .ENV WHEN IT'S WORKING
-      fetch("https://api.themotivate365.com/stoic-quote", requestOptions).then(function (response) {
+      fetch(undefined, requestOptions).then(function (response) {
         return response.json();
       }).then(function (data) {
         _this.$qteBody.innerHTML = "\"" + data.quote + "\" - " + data.author;
@@ -174,8 +174,8 @@ var Index = /*#__PURE__*/function () {
         if (this.regBody.test(this.$formBody.value)) {
           if (this.$formStart.value != null && this.$formEnd.value != null) {
             if (this.$formStart.value < this.$formEnd.value) {
-              this.$formStart.value = this.convertDate(this.$formStart.value);
-              this.$formEnd.value = this.convertDate(this.$formEnd.value);
+              //this.$formStart.value = this.convertDate(this.$formStart.value);
+              //this.$formEnd.value = this.convertDate(this.$formEnd.value);
               return true;
             }
           }
@@ -189,6 +189,8 @@ var Index = /*#__PURE__*/function () {
       }
       return false;
     }
+
+    // currently not working so this and any calls are commented out
   }, {
     key: "convertDate",
     value: function convertDate(dateInput) {
