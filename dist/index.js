@@ -60,9 +60,6 @@ var Index = /*#__PURE__*/function () {
         body: "Create a new goal for myself to eventually reach, that would be really cool."
       }];
     }
-    this.$qteCntr = document.getElementById("quoteContainer");
-    this.$qteBody = document.getElementById("quoteBody");
-    this.$qteRfrsh = document.getElementById("quoteRefresh");
     this.$addGoalBtn = document.getElementById("addGoal");
     this.$goalForm = document.getElementById("goalForm");
     this.$goalList = document.getElementById("goalList");
@@ -80,38 +77,14 @@ var Index = /*#__PURE__*/function () {
 
     // Method bindings
     this.hideForm = this.hideForm.bind(this);
-    this.getStoicQuote = this.getStoicQuote.bind(this);
     this.initForm = this.initForm.bind(this);
     this.createGoal = this.createGoal.bind(this);
     this.loadGoals();
-    this.getStoicQuote();
     this.addListeners();
   }
   _createClass(Index, [{
-    key: "getStoicQuote",
-    value: function getStoicQuote() {
-      var _this = this;
-      var requestOptions = {
-        method: 'GET',
-        mode: 'cors'
-      };
-
-      // CHANGE URL TO BE QUOTE_URL FROM .ENV WHEN IT'S WORKING
-      fetch(undefined, requestOptions).then(function (response) {
-        return response.json();
-      }).then(function (data) {
-        _this.$qteBody.innerHTML = "\"" + data.quote + "\" - " + data.author;
-        _this.$qteCntr.classList.remove("visually-hidden");
-      })["catch"](function (error) {
-        _this.$qteCntr.classList.add("visually-hidden");
-        _this.$qteBody.innerHTML = "Error in fetching quote :(";
-      });
-    }
-  }, {
     key: "addListeners",
     value: function addListeners() {
-      this.$qteRfrsh.style.cursor = 'pointer';
-      this.$qteRfrsh.onclick = this.getStoicQuote;
       this.$addGoalBtn.onclick = this.initForm;
       this.$submitBtn.onclick = this.createGoal;
       for (var index = 0; index < this.goals.length; index++) {
@@ -189,22 +162,6 @@ var Index = /*#__PURE__*/function () {
       }
       return false;
     }
-
-    // currently not working so this and any calls are commented out
-  }, {
-    key: "convertDate",
-    value: function convertDate(dateInput) {
-      var year = dateInput.getFullYear();
-      var mon = dateInput.getMonth() + 1;
-      var day = dateInput.getDate();
-      if (day < 10) {
-        day = '0' + day;
-      }
-      if (mon < 10) {
-        mon = '0' + mon;
-      }
-      return day + "/" + mon + "/" + year;
-    }
   }, {
     key: "deleteGoal",
     value: function deleteGoal(goal) {
@@ -227,9 +184,53 @@ var Index = /*#__PURE__*/function () {
     }
   }]);
   return Index;
+}(); // Generates a quote each time it's called.
+var QuoteGen = /*#__PURE__*/function () {
+  // Default constructor with global vars
+  function QuoteGen() {
+    _classCallCheck(this, QuoteGen);
+    // grabbing quote components
+    this.$qteCntr = document.getElementById("quoteContainer");
+    this.$qteBody = document.getElementById("quoteBody");
+    this.$qteRfrsh = document.getElementById("quoteRefresh");
+
+    // binding methods
+    this.getStoicQuote = this.getStoicQuote.bind(this);
+    this.getStoicQuote();
+    this.addQuoteListeners();
+  }
+  _createClass(QuoteGen, [{
+    key: "addQuoteListeners",
+    value: function addQuoteListeners() {
+      this.$qteRfrsh.style.cursor = 'pointer';
+      this.$qteRfrsh.onclick = this.getStoicQuote;
+    }
+  }, {
+    key: "getStoicQuote",
+    value: function getStoicQuote() {
+      var _this = this;
+      var requestOptions = {
+        method: 'GET',
+        mode: 'cors'
+      };
+
+      // CHANGE URL TO BE QUOTE_URL FROM .ENV WHEN IT'S WORKING
+      fetch("https://api.themotivate365.com/stoic-quote", requestOptions).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        _this.$qteBody.innerHTML = "\"" + data.quote + "\" - " + data.author;
+        _this.$qteCntr.classList.remove("visually-hidden");
+      })["catch"](function (error) {
+        _this.$qteCntr.classList.add("visually-hidden");
+        _this.$qteBody.innerHTML = "Error in fetching quote :(";
+      });
+    }
+  }]);
+  return QuoteGen;
 }();
-var indexInit;
+var indexInit, quoteInit;
 window.onload = function () {
+  quoteInit = new QuoteGen();
   indexInit = new Index();
 };
 

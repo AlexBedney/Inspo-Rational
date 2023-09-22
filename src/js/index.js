@@ -3,83 +3,31 @@ import "./general";
 class Index {
     // constructor to initialize all global vars and methods
     constructor() {
-        this.regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
-        this.regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
-
-        try {
-            this.goals = JSON.parse(localStorage["goalsList"]);
-        }
-        catch {
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            // Months start at 0
-            let mm = today.getMonth() + 1;
-            let dd = today.getDate();
-            let nextDd = today.getDate() + 1;
-
-            if (dd < 10) dd = '0' + dd;
-            if (mm < 10) mm = '0' + mm;
-
-            this.goals = [
-                {
-                    title: "Create A New Goal",
-                    startFrom: dd + "/" + mm + "/" + yyyy,
-                    endAt: nextDd + "/" + mm + "/" + yyyy,
-                    body: "Create a new goal for myself to eventually reach, that would be really cool."
-                },
-            ]
-        }
-        this.$addGoalBtn = document.getElementById("addGoal");
-        this.$goalForm = document.getElementById("goalForm");
         this.$goalList = document.getElementById("goalList");
         this.$onCarots = document.getElementsByName("onCarot");
         this.$offCarots = document.getElementsByName("offCarot");
         this.$goalDetails = document.getElementsByName("goalDetails");
         this.$goalDelete = document.getElementsByName("deleteGoal");
 
-        // Form fields
-        this.$formTitle = document.getElementById("title");
-        this.$formStart = document.getElementById("start");
-        this.$formEnd = document.getElementById("end");
-        this.$formBody = document.getElementById("body");
-        this.$submitBtn = document.getElementById("submitButton");
-
-        // Method bindings
-        this.hideForm = this.hideForm.bind(this);
-        this.initForm = this.initForm.bind(this);
-        this.createGoal = this.createGoal.bind(this);
-
         this.loadGoals();
         this.addListeners();
     }
 
     addListeners() {
-        this.$addGoalBtn.onclick = this.initForm;
-        this.$submitBtn.onclick = this.createGoal;
-
-        for (var index = 0; index < this.goals.length; index++) {
-            this.$goalDelete[index].onclick = this.deleteGoal.bind(this, this.goals[index]);
+        let newGoal = new CreateGoal();
+        for (var index = 0; index < goals.length; index++) {
+            this.$goalDelete[index].onclick = this.deleteGoal.bind(this, goals[index]);
             this.$onCarots[index].onclick = this.showDetails.bind(this, index);
             this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
         }
     }
 
-    initForm() {
-        this.$goalForm.classList.remove("visually-hidden");
-        this.$addGoalBtn.onclick = this.hideForm;
-    }
-
-    hideForm() {
-        this.$goalForm.classList.add("visually-hidden");
-        this.$addGoalBtn.onclick = this.initForm;
-    }
-
     loadGoals() {
-        localStorage["goalsList"] = JSON.stringify(this.goals);
+        localStorage["goalsList"] = JSON.stringify(goals);
         var goalHtml = "";
 
-        for (var index = 0; index < this.goals.length; index++) {
-            goalHtml += this.generateGoalHtml(this.goals[index]);
+        for (var index = 0; index < goals.length; index++) {
+            goalHtml += this.generateGoalHtml(goals[index]);
         }
 
         this.$goalList.innerHTML = goalHtml;
@@ -103,54 +51,16 @@ class Index {
             </div>`;
     }
 
-    createGoal() {
-        if(this.validateForm()) {
-            const newGoal = {
-                title: this.$formTitle.value,
-                startFrom: this.$formStart.value,
-                endAt: this.$formEnd.value,
-                body: this.$formBody.value
-            };
-            this.goals.push(newGoal);
-            
-            this.$formTitle.value = "";
-            this.$formStart.value = "";
-            this.$formEnd.value = "";
-            this.$formBody.value = "";
-            this.loadGoals();
-        }
-        else {
-            alert("invalid fields found and marked");
-        }
-    }
-
-    validateForm() {
-        if (this.regTitle.test(this.$formTitle.value)) {
-            if (this.regBody.test(this.$formBody.value)) {
-                if (this.$formStart.value != null && this.$formEnd.value != null){
-                    if (this.$formStart.value < this.$formEnd.value) {
-                        //this.$formStart.value = this.convertDate(this.$formStart.value);
-                        //this.$formEnd.value = this.convertDate(this.$formEnd.value);
-                        return true;   
-                    }
-                }
-                this.$formStart.classList.add("is-invalid");
-                this.$formEnd.classList.add("is-invalid");
-            }
-            else {
-                this.$formBody.classList.add("is-invalid");
-            }
-        }
-        else {
-            this.$formTitle.classList.add("is-invalid");
-        }
-
-        return false;
-    }
-
     deleteGoal(goal) {
-        this.goals.splice(goal, 1);
-        this.loadGoals();
+        var goalIndex
+        for (var i = 0; i < goals.length; i++) {
+            if (goals[i] === goal) {
+                goalIndex = i;
+            }
+
+        }
+        goals.splice(goalIndex, 1);
+        indexInit = new Index();
     }
 
     showDetails(index) {
@@ -165,6 +75,7 @@ class Index {
         this.$offCarots[index].classList.add("visually-hidden");
     }
 }
+
 // Generates a quote each time it's called.
 class QuoteGen {
     // Default constructor with global vars
@@ -205,7 +116,116 @@ class QuoteGen {
     }
 }
 
-let indexInit, quoteInit;
+// Has attributes for initializing the tools and validation of new goals
+class CreateGoal {
+    constructor() {
+        this.regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
+        this.regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
+        
+        this.$addGoalBtn = document.getElementById("addGoal");
+        this.$goalForm = document.getElementById("goalForm");
+        
+        // Form fields
+        this.$formTitle = document.getElementById("title");
+        this.$formStart = document.getElementById("start");
+        this.$formEnd = document.getElementById("end");
+        this.$formBody = document.getElementById("body");
+        this.$submitBtn = document.getElementById("submitButton");
+        
+        // Method bindings
+        this.hideForm = this.hideForm.bind(this);
+        this.initForm = this.initForm.bind(this);
+        this.createGoal = this.createGoal.bind(this);
+
+        this.addFormListeners();
+    }
+
+    addFormListeners() {
+        this.$addGoalBtn.onclick = this.initForm;
+        this.$submitBtn.onclick = this.createGoal;
+    }
+
+    createGoal() {
+        if(this.validateForm()) {
+            const newGoal = {
+                title: this.$formTitle.value,
+                startFrom: this.$formStart.value,
+                endAt: this.$formEnd.value,
+                body: this.$formBody.value
+            };
+            goals.push(newGoal);
+            
+            this.$formTitle.value = "";
+            this.$formStart.value = "";
+            this.$formEnd.value = "";
+            this.$formBody.value = "";
+
+            this.addFormListeners();
+            indexInit = new Index();
+        }
+        else {
+            alert("invalid fields found and marked");
+        }
+    }
+
+    validateForm() {
+        if (this.regTitle.test(this.$formTitle.value)) {
+            if (this.regBody.test(this.$formBody.value)) {
+                if (this.$formStart.value != null && this.$formEnd.value != null){
+                    if (this.$formStart.value < this.$formEnd.value) {
+                        return true;   
+                    }
+                }
+                this.$formStart.classList.add("is-invalid");
+                this.$formEnd.classList.add("is-invalid");
+            }
+            else {
+                this.$formBody.classList.add("is-invalid");
+            }
+        }
+        else {
+            this.$formTitle.classList.add("is-invalid");
+        }
+
+        return false;
+    }
+
+    initForm() {
+        this.$goalForm.classList.remove("visually-hidden");
+        this.$addGoalBtn.onclick = this.hideForm;
+    }
+
+    hideForm() {
+        this.$goalForm.classList.add("visually-hidden");
+        this.$addGoalBtn.onclick = this.initForm;
+    }
+}
+let goals = [];
+let indexInit, quoteInit, goalInit;
+
+try {
+    goals = JSON.parse(localStorage["goalsList"]);
+}
+catch {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    // Months start at 0
+    let mm = today.getMonth() + 1;
+    let dd = today.getDate();
+    let nextDd = today.getDate() + 1;
+
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
+
+    goals = [
+        {
+            title: "Create A New Goal",
+            startFrom: dd + "/" + mm + "/" + yyyy,
+            endAt: nextDd + "/" + mm + "/" + yyyy,
+            body: "Create a new goal for myself to eventually reach, that would be really cool."
+        },
+    ]
+}
 window.onload = () => {
     quoteInit = new QuoteGen();
     indexInit = new Index();
