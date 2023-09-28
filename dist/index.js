@@ -2,33 +2,18 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/js/general.js":
-/*!***************************!*\
-  !*** ./src/js/general.js ***!
-  \***************************/
+/***/ "./src/js/App.js":
+/*!***********************!*\
+  !*** ./src/js/App.js ***!
+  \***********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
-/* harmony import */ var _css_main_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../css/main.css */ "./src/css/main.css");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-// CSS files
-
-
-
-//Bootstrap JS File
-
-
-/***/ }),
-
-/***/ "./src/js/index.js":
-/*!*************************!*\
-  !*** ./src/js/index.js ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _general__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./general */ "./src/js/general.js");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Goal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Goal */ "./src/js/Goal.js");
+/* harmony import */ var _QuoteGen__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./QuoteGen */ "./src/js/QuoteGen.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
@@ -36,24 +21,39 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
-var Index = /*#__PURE__*/function () {
+
+var App = /*#__PURE__*/function () {
   // constructor to initialize all global vars and methods
-  function Index() {
-    _classCallCheck(this, Index);
+  function App() {
+    _classCallCheck(this, App);
     this.$goalList = document.getElementById("goalList");
     this.$onCarots = document.getElementsByName("onCarot");
     this.$offCarots = document.getElementsByName("offCarot");
     this.$goalDetails = document.getElementsByName("goalDetails");
     this.$goalDelete = document.getElementsByName("deleteGoal");
-    this.loadGoals();
+    this.$addGoalBtn = document.getElementById("addGoal");
+    this.$goalForm = document.getElementById("goalForm");
+
+    // Method bindings
+
+    this.addFormListeners();
+    var savedGoals = this.loadGoals();
+    if (!savedGoals || savedGoals.length == 0) {
+      savedGoals = [_Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newDefaultGoal()];
+    }
+    this.renderGoals(savedGoals);
     this.addListeners();
   }
-  _createClass(Index, [{
+  _createClass(App, [{
     key: "addListeners",
     value: function addListeners() {
-      var newGoal = new CreateGoal();
+      var newGoal = new _Goal__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      this.hideForm = this.hideForm.bind(this);
+      this.initForm = this.initForm.bind(this);
+      this.newFromForm = this.newFromForm.bind(this);
+      this.$addGoalBtn.onclick = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].initForm;
+      this.$submitBtn.onclick = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newFromForm;
       for (var index = 0; index < goals.length; index++) {
-        this.$goalDelete[index].onclick = this.deleteGoal.bind(this, goals[index]);
         this.$onCarots[index].onclick = this.showDetails.bind(this, index);
         this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
       }
@@ -61,29 +61,24 @@ var Index = /*#__PURE__*/function () {
   }, {
     key: "loadGoals",
     value: function loadGoals() {
-      localStorage["goalsList"] = JSON.stringify(goals);
+      //localStorage["goalsList"] = JSON.stringify(goals);
+      var goals = JSON.parse(localStorage["goalsList"]);
+      var savedGoals = [];
+      for (var index = 0; index < goals.length; index++) {
+        var goal = new _Goal__WEBPACK_IMPORTED_MODULE_0__["default"](goals[index]);
+        savedGoals.push(goal);
+      }
+      return savedGoals;
+    }
+  }, {
+    key: "renderGoals",
+    value: function renderGoals(goals) {
       var goalHtml = "";
       for (var index = 0; index < goals.length; index++) {
-        goalHtml += this.generateGoalHtml(goals[index]);
+        goalHtml += goals[index].render();
+        console.log(goals[index]);
       }
       this.$goalList.innerHTML = goalHtml;
-    }
-  }, {
-    key: "generateGoalHtml",
-    value: function generateGoalHtml(goal) {
-      return "<div class=\"goal-form\">\n                <div class=\"row m-2\">\n                    <h5 class=\"col-5\">Goal: ".concat(goal.title, "</h5>\n                    <h5 class=\"col-5\">Starting from: ").concat(goal.startFrom, " to ").concat(goal.endAt, "</h5>\n                    <button class=\"btn btn-info col-1\" name=\"onCarot\"><i class=\"bi bi-caret-left-fill\"></i></button>\n                    <button class=\"btn btn-secondary col-1 visually-hidden\" name=\"offCarot\"><i class=\"bi bi-caret-down\"></i></button>\n                    <button class=\"btn btn-danger col-1\" name=\"deleteGoal\"><i class=\"bi bi-trash3-fill\"></i></button>\n                </div>\n                <div class=\"row m-1 p-1 pe-3 visually-hidden\" style=\"background-color: #636363;\" name=\"goalDetails\">\n                    <div id=\"goalProgress\">\n                        <div id=\"currentProgress\"></div>\n                    </div>\n                    <div class=\"rounded-3 p-1 m-1\" style=\"background-color: #dddddd;\">").concat(goal.body, "</div>\n                </div>\n            </div>");
-    }
-  }, {
-    key: "deleteGoal",
-    value: function deleteGoal(goal) {
-      var goalIndex;
-      for (var i = 0; i < goals.length; i++) {
-        if (goals[i] === goal) {
-          goalIndex = i;
-        }
-      }
-      goals.splice(goalIndex, 1);
-      indexInit = new Index();
     }
   }, {
     key: "showDetails",
@@ -99,9 +94,161 @@ var Index = /*#__PURE__*/function () {
       this.$onCarots[index].classList.remove("visually-hidden");
       this.$offCarots[index].classList.add("visually-hidden");
     }
+  }, {
+    key: "initForm",
+    value: function initForm() {
+      this.$goalForm.classList.remove("visually-hidden");
+      this.$addGoalBtn.onclick = this.hideForm;
+    }
+  }, {
+    key: "hideForm",
+    value: function hideForm() {
+      this.$goalForm.classList.add("visually-hidden");
+      this.$addGoalBtn.onclick = this.initForm;
+    }
   }]);
-  return Index;
-}(); // Generates a quote each time it's called.
+  return App;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
+
+/***/ }),
+
+/***/ "./src/js/Goal.js":
+/*!************************!*\
+  !*** ./src/js/Goal.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+// Has attributes for initializing the tools and validation of new goals
+var Goal = /*#__PURE__*/function () {
+  function Goal(obj) {
+    _classCallCheck(this, Goal);
+    // Instance variables
+    _defineProperty(this, "title", void 0);
+    _defineProperty(this, "startFrom", void 0);
+    _defineProperty(this, "endAt", void 0);
+    _defineProperty(this, "body", void 0);
+    this.regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
+    this.regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
+    this.title = obj.title;
+    this.startFrom = obj.startFrom;
+    this.endAt = obj.endAt;
+    this.body = obj.body;
+
+    // Form fields
+    this.$submitBtn = document.getElementById("submitButton");
+  }
+  _createClass(Goal, [{
+    key: "validateForm",
+    value: function validateForm() {
+      if (this.regTitle.test(this.$formTitle.value)) {
+        if (this.regBody.test(this.$formBody.value)) {
+          if (this.$formStart.value != null && this.$formEnd.value != null) {
+            if (this.$formStart.value < this.$formEnd.value) {
+              return true;
+            }
+          }
+          this.$formStart.classList.add("is-invalid");
+          this.$formEnd.classList.add("is-invalid");
+        } else {
+          this.$formBody.classList.add("is-invalid");
+        }
+      } else {
+        this.$formTitle.classList.add("is-invalid");
+      }
+      return false;
+    }
+  }, {
+    key: "delete",
+    value: function _delete(goal) {
+      var goalIndex;
+      for (var i = 0; i < goals.length; i++) {
+        if (goals[i] === goal) {
+          goalIndex = i;
+        }
+      }
+      goals.splice(goalIndex, 1);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return "<div class=\"goal-form\">\n                <div class=\"row m-2\">\n                    <h5 class=\"col-5\">Goal: ".concat(this.title, "</h5>\n                    <h5 class=\"col-5\">Starting from: ").concat(this.startFrom, " to ").concat(this.endAt, "</h5>\n                    <button class=\"btn btn-info col-1\" name=\"onCarot\"><i class=\"bi bi-caret-left-fill\"></i></button>\n                    <button class=\"btn btn-secondary col-1 visually-hidden\" name=\"offCarot\"><i class=\"bi bi-caret-down\"></i></button>\n                    <button class=\"btn btn-danger col-1\" name=\"deleteGoal\"><i class=\"bi bi-trash3-fill\"></i></button>\n                </div>\n                <div class=\"row m-1 p-1 pe-3 visually-hidden\" style=\"background-color: #636363;\" name=\"goalDetails\">\n                    <div id=\"goalProgress\">\n                        <div id=\"currentProgress\"></div>\n                    </div>\n                    <div class=\"rounded-3 p-1 m-1\" style=\"background-color: #dddddd;\">").concat(this.body, "</div>\n                </div>\n            </div>");
+    }
+  }], [{
+    key: "newFromForm",
+    value: function newFromForm() {
+      if (this.validateForm()) {
+        var $formEl = document.getElementById("goalForm");
+        var newGoal = {
+          title: this.$formTitle.value,
+          startFrom: this.$formStart.value,
+          endAt: this.$formEnd.value,
+          body: this.$formBody.value
+        };
+        this.$formTitle.value = "";
+        this.$formStart.value = "";
+        this.$formEnd.value = "";
+        this.$formBody.value = "";
+        return newGoal;
+      } else {
+        alert("invalid fields found and marked");
+      }
+    }
+  }, {
+    key: "newDefaultGoal",
+    value: function newDefaultGoal() {
+      var today = new Date();
+      var yyyy = today.getFullYear();
+      // Months start at 0
+      var mm = today.getMonth() + 1;
+      var dd = today.getDate();
+      var nextDd = today.getDate() + 1;
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+      var goal = {
+        title: "Create A New Goal",
+        startFrom: dd + "/" + mm + "/" + yyyy,
+        endAt: nextDd + "/" + mm + "/" + yyyy,
+        body: "Create a new goal for myself to eventually reach, that would be really cool."
+      };
+      var defaultGoal = new Goal(goal);
+      return defaultGoal;
+    }
+  }]);
+  return Goal;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Goal);
+
+/***/ }),
+
+/***/ "./src/js/QuoteGen.js":
+/*!****************************!*\
+  !*** ./src/js/QuoteGen.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+// Generates a quote each time it's called.
 var QuoteGen = /*#__PURE__*/function () {
   // Default constructor with global vars
   function QuoteGen() {
@@ -144,114 +291,37 @@ var QuoteGen = /*#__PURE__*/function () {
     }
   }]);
   return QuoteGen;
-}(); // Has attributes for initializing the tools and validation of new goals
-var CreateGoal = /*#__PURE__*/function () {
-  function CreateGoal() {
-    _classCallCheck(this, CreateGoal);
-    this.regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
-    this.regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
-    this.$addGoalBtn = document.getElementById("addGoal");
-    this.$goalForm = document.getElementById("goalForm");
-
-    // Form fields
-    this.$formTitle = document.getElementById("title");
-    this.$formStart = document.getElementById("start");
-    this.$formEnd = document.getElementById("end");
-    this.$formBody = document.getElementById("body");
-    this.$submitBtn = document.getElementById("submitButton");
-
-    // Method bindings
-    this.hideForm = this.hideForm.bind(this);
-    this.initForm = this.initForm.bind(this);
-    this.createGoal = this.createGoal.bind(this);
-    this.addFormListeners();
-  }
-  _createClass(CreateGoal, [{
-    key: "addFormListeners",
-    value: function addFormListeners() {
-      this.$addGoalBtn.onclick = this.initForm;
-      this.$submitBtn.onclick = this.createGoal;
-    }
-  }, {
-    key: "createGoal",
-    value: function createGoal() {
-      if (this.validateForm()) {
-        var newGoal = {
-          title: this.$formTitle.value,
-          startFrom: this.$formStart.value,
-          endAt: this.$formEnd.value,
-          body: this.$formBody.value
-        };
-        goals.push(newGoal);
-        this.$formTitle.value = "";
-        this.$formStart.value = "";
-        this.$formEnd.value = "";
-        this.$formBody.value = "";
-        this.addFormListeners();
-        indexInit = new Index();
-      } else {
-        alert("invalid fields found and marked");
-      }
-    }
-  }, {
-    key: "validateForm",
-    value: function validateForm() {
-      if (this.regTitle.test(this.$formTitle.value)) {
-        if (this.regBody.test(this.$formBody.value)) {
-          if (this.$formStart.value != null && this.$formEnd.value != null) {
-            if (this.$formStart.value < this.$formEnd.value) {
-              return true;
-            }
-          }
-          this.$formStart.classList.add("is-invalid");
-          this.$formEnd.classList.add("is-invalid");
-        } else {
-          this.$formBody.classList.add("is-invalid");
-        }
-      } else {
-        this.$formTitle.classList.add("is-invalid");
-      }
-      return false;
-    }
-  }, {
-    key: "initForm",
-    value: function initForm() {
-      this.$goalForm.classList.remove("visually-hidden");
-      this.$addGoalBtn.onclick = this.hideForm;
-    }
-  }, {
-    key: "hideForm",
-    value: function hideForm() {
-      this.$goalForm.classList.add("visually-hidden");
-      this.$addGoalBtn.onclick = this.initForm;
-    }
-  }]);
-  return CreateGoal;
 }();
-var goals = [];
-var indexInit, quoteInit, goalInit;
-try {
-  goals = JSON.parse(localStorage["goalsList"]);
-} catch (_unused) {
-  var today = new Date();
-  var yyyy = today.getFullYear();
-  // Months start at 0
-  var mm = today.getMonth() + 1;
-  var dd = today.getDate();
-  var nextDd = today.getDate() + 1;
-  if (dd < 10) dd = '0' + dd;
-  if (mm < 10) mm = '0' + mm;
-  goals = [{
-    title: "Create A New Goal",
-    startFrom: dd + "/" + mm + "/" + yyyy,
-    endAt: nextDd + "/" + mm + "/" + yyyy,
-    body: "Create a new goal for myself to eventually reach, that would be really cool."
-  }];
-}
-window.onload = function () {
-  quoteInit = new QuoteGen();
-  indexInit = new Index();
-};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (QuoteGen);
+
+/***/ }),
+
+/***/ "./src/js/index.js":
+/*!*************************!*\
+  !*** ./src/js/index.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
+/* harmony import */ var _css_main_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../css/main.css */ "./src/css/main.css");
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _App__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./App */ "./src/js/App.js");
+/* harmony import */ var _QuoteGen__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./QuoteGen */ "./src/js/QuoteGen.js");
+// CSS files
+
+
+
+//Bootstrap JS File
+
+
+// Import Application
+
+
+window.addEventListener("load", function () {
+  var quoteInit = new _QuoteGen__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  var indexInit = new _App__WEBPACK_IMPORTED_MODULE_3__["default"]();
+});
 
 /***/ }),
 
