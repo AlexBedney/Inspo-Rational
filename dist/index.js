@@ -13,14 +13,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _Goal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Goal */ "./src/js/Goal.js");
-/* harmony import */ var _QuoteGen__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./QuoteGen */ "./src/js/QuoteGen.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-
 
 var App = /*#__PURE__*/function () {
   // constructor to initialize all global vars and methods
@@ -36,7 +34,8 @@ var App = /*#__PURE__*/function () {
 
     // Method bindings
 
-    this.addFormListeners();
+    // RE-HIDE FORM WHEN CODE IS WORKING - visually-hidden
+
     var savedGoals = this.loadGoals();
     if (!savedGoals || savedGoals.length == 0) {
       savedGoals = [_Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newDefaultGoal()];
@@ -47,12 +46,18 @@ var App = /*#__PURE__*/function () {
   _createClass(App, [{
     key: "addListeners",
     value: function addListeners() {
-      var newGoal = new _Goal__WEBPACK_IMPORTED_MODULE_0__["default"]();
-      this.hideForm = this.hideForm.bind(this);
-      this.initForm = this.initForm.bind(this);
-      this.newFromForm = this.newFromForm.bind(this);
-      this.$addGoalBtn.onclick = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].initForm;
+      //this.hideForm = this.hideForm.bind(this);
+      //this.initForm = this.initForm.bind(this);
+      //this.newFromForm = this.newFromForm.bind(this);
+      //this.$addGoalBtn.onclick = Goal.initForm;
       this.$submitBtn.onclick = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newFromForm;
+      this.$goalList.addEventListener("click", function (event) {
+        console.log(event);
+      });
+      // One event listener to show previously stored event
+      // Another event listener to hide details
+
+      // one event listener to delete events.
       for (var index = 0; index < goals.length; index++) {
         this.$onCarots[index].onclick = this.showDetails.bind(this, index);
         this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
@@ -62,6 +67,9 @@ var App = /*#__PURE__*/function () {
     key: "loadGoals",
     value: function loadGoals() {
       //localStorage["goalsList"] = JSON.stringify(goals);
+      if (!localStorage["goalsList"]) {
+        return [];
+      }
       var goals = JSON.parse(localStorage["goalsList"]);
       var savedGoals = [];
       for (var index = 0; index < goals.length; index++) {
