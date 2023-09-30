@@ -1,4 +1,7 @@
 // Has attributes for initializing the tools and validation of new goals
+const regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
+const regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
+
 class Goal {
     // Instance variables
     title;
@@ -7,9 +10,6 @@ class Goal {
     body;
 
     constructor(obj) {
-        this.regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
-        this.regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
-
         this.title = obj.title;
         this.startFrom = obj.startFrom;
         this.endAt = obj.endAt;
@@ -17,51 +17,49 @@ class Goal {
         
         // Form fields
         this.$submitBtn = document.getElementById("submitButton");
-        
     }
 
-    static newFromForm() {
-        if(this.validateForm()) {
-            let $formEl = document.getElementById("goalForm");
-            const newGoal = {
-                title: this.$formTitle.value,
-                startFrom: this.$formStart.value,
-                endAt: this.$formEnd.value,
-                body: this.$formBody.value
-            };
-            
-            this.$formTitle.value = "";
-            this.$formStart.value = "";
-            this.$formEnd.value = "";
-            this.$formBody.value = "";
+    static newFromForm(formData) {
+        let newGoalObj = {
+            title: formData.get("title"),
+            start: formData.get("start"),
+            end: formData.get("end"),
+            body: formData.get("body"),
+        }
 
-            return newGoal;
-        }
-        else {
-            alert("invalid fields found and marked");
-        }
+        let newGoal = new Goal(newGoalObj);
+
+        return newGoal;
     }
 
-    validateForm() {
-        if (this.regTitle.test(this.$formTitle.value)) {
-            if (this.regBody.test(this.$formBody.value)) {
-                if (this.$formStart.value != null && this.$formEnd.value != null){
-                    if (this.$formStart.value < this.$formEnd.value) {
-                        return true;   
-                    }
-                }
-                this.$formStart.classList.add("is-invalid");
-                this.$formEnd.classList.add("is-invalid");
-            }
-            else {
-                this.$formBody.classList.add("is-invalid");
-            }
-        }
-        else {
-            this.$formTitle.classList.add("is-invalid");
+    static validateForm(form) {
+        if (!regTitle.test(form.title.value)) {
+            form.title.classList.add("is-invalid");
+            return false;
         }
 
-        return false;
+        if (form.start.value == null || form.end.value == null){
+            form.start.classList.add("is-invalid");
+            form.end.classList.add("is-invalid");
+            return false;   
+        }
+
+        if (form.start.value > form.end.value) {
+            form.start.classList.add("is-invalid");
+            form.end.classList.add("is-invalid");
+            return false;   
+        }
+
+        if (!regBody.test(form.body.value)) {
+            form.body.classList.add("is-invalid");
+            return false;
+        }
+
+        return true;
+    }
+
+    toJson() {
+        //json.stringify(this)
     }
     
     delete(goal) {

@@ -25,22 +25,14 @@ var App = /*#__PURE__*/function () {
   function App() {
     _classCallCheck(this, App);
     this.$goalList = document.getElementById("goalList");
-    this.$onCarots = document.getElementsByName("onCarot");
-    this.$offCarots = document.getElementsByName("offCarot");
-    this.$goalDetails = document.getElementsByName("goalDetails");
     this.$goalDelete = document.getElementsByName("deleteGoal");
     this.$addGoalBtn = document.getElementById("addGoal");
     this.$goalForm = document.getElementById("goalForm");
-
-    // Method bindings
-
-    // RE-HIDE FORM WHEN CODE IS WORKING - visually-hidden
-
-    var savedGoals = this.loadGoals();
-    if (!savedGoals || savedGoals.length == 0) {
-      savedGoals = [_Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newDefaultGoal()];
+    this.savedGoals = this.loadGoals();
+    if (!this.savedGoals || this.savedGoals.length == 0) {
+      this.savedGoals = [_Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newDefaultGoal()];
     }
-    this.renderGoals(savedGoals);
+    this.renderGoals(this.savedGoals);
     this.addListeners();
   }
   _createClass(App, [{
@@ -51,17 +43,61 @@ var App = /*#__PURE__*/function () {
       //this.newFromForm = this.newFromForm.bind(this);
       //this.$addGoalBtn.onclick = Goal.initForm;
       this.$submitBtn.onclick = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newFromForm;
-      this.$goalList.addEventListener("click", function (event) {
-        console.log(event);
+      var $onCarots = document.getElementsByName("onCarot");
+      var $offCarots = document.getElementsByName("offCarot");
+      var $goalDetails = document.getElementsByName("goalDetails");
+      var form = this.$goalForm;
+      var addGoalBtn = this.$addGoalBtn;
+
+      // Careful, any this. will be ignored and alienate any functions to it inside, hence why creating a goal isn't here
+      document.addEventListener("click", function (event) {
+        // let isClick = e.type == "click";
+        var target = event.target;
+
+        // HTML5 data attributes;
+        var data = target.dataset;
+
+        // No action to take if data is null.
+        if (!data) return;
+        var action = data.action; // What action to take?
+        var index = data.index;
+        if ("delete" == action) {
+          localStorage["delete"]("goalsList", index);
+          return;
+        }
+        if ("add" == action) {
+          form.classList.remove("visually-hidden");
+          addGoalBtn.dataset.action = "disable";
+        }
+        if ("disable" == action) {
+          form.classList.add("visually-hidden");
+          addGoalBtn.dataset.action = "add";
+        }
+        if ("hide" == action) {
+          $goalDetails[index].classList.add("visually-hidden");
+          $onCarots[index].classList.remove("visually-hidden");
+          $offCarots[index].classList.add("visually-hidden");
+        }
+        if ("show" == action) {
+          $goalDetails[index].classList.remove("visually-hidden");
+          $onCarots[index].classList.add("visually-hidden");
+          $offCarots[index].classList.remove("visually-hidden");
+        }
+        if ("refreshQuote" == action) {
+          QuoteGen.refresh();
+          return;
+        }
+        // <icon data-action="delete-goal" data-index="1" />
       });
       // One event listener to show previously stored event
       // Another event listener to hide details
 
       // one event listener to delete events.
-      for (var index = 0; index < goals.length; index++) {
-        this.$onCarots[index].onclick = this.showDetails.bind(this, index);
-        this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
-      }
+      /*
+      for (var index = 0; index < this.savedGoals.length; index++) {
+          this.$onCarots[index].onclick = this.showDetails.bind(this, index);
+          this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
+      }/**/
     }
   }, {
     key: "loadGoals",
@@ -71,49 +107,42 @@ var App = /*#__PURE__*/function () {
         return [];
       }
       var goals = JSON.parse(localStorage["goalsList"]);
-      var savedGoals = [];
+      var newSavedGoals = [];
       for (var index = 0; index < goals.length; index++) {
         var goal = new _Goal__WEBPACK_IMPORTED_MODULE_0__["default"](goals[index]);
-        savedGoals.push(goal);
+        newSavedGoals.push(goal);
       }
-      return savedGoals;
+      return newSavedGoals;
     }
   }, {
     key: "renderGoals",
     value: function renderGoals(goals) {
       var goalHtml = "";
       for (var index = 0; index < goals.length; index++) {
-        goalHtml += goals[index].render();
-        console.log(goals[index]);
+        goalHtml += goals[index].render(index);
       }
       this.$goalList.innerHTML = goalHtml;
     }
-  }, {
-    key: "showDetails",
-    value: function showDetails(index) {
-      this.$goalDetails[index].classList.remove("visually-hidden");
-      this.$onCarots[index].classList.add("visually-hidden");
-      this.$offCarots[index].classList.remove("visually-hidden");
+    /*
+    showDetails(index) {
+        this.$goalDetails[index].classList.remove("visually-hidden");
+        this.$onCarots[index].classList.add("visually-hidden");
+        this.$offCarots[index].classList.remove("visually-hidden");
     }
-  }, {
-    key: "hideDetails",
-    value: function hideDetails(index) {
-      this.$goalDetails[index].classList.add("visually-hidden");
-      this.$onCarots[index].classList.remove("visually-hidden");
-      this.$offCarots[index].classList.add("visually-hidden");
+      hideDetails(index) {
+        this.$goalDetails[index].classList.add("visually-hidden");
+        this.$onCarots[index].classList.remove("visually-hidden");
+        this.$offCarots[index].classList.add("visually-hidden");
     }
-  }, {
-    key: "initForm",
-    value: function initForm() {
-      this.$goalForm.classList.remove("visually-hidden");
-      this.$addGoalBtn.onclick = this.hideForm;
+      initForm() {
+        this.$goalForm.classList.remove("visually-hidden");
+        this.$addGoalBtn.onclick = this.hideForm;
     }
-  }, {
-    key: "hideForm",
-    value: function hideForm() {
-      this.$goalForm.classList.add("visually-hidden");
-      this.$addGoalBtn.onclick = this.initForm;
+      hideForm() {
+        this.$goalForm.classList.add("visually-hidden");
+        this.$addGoalBtn.onclick = this.initForm;
     }
+    */
   }]);
   return App;
 }();
@@ -190,8 +219,8 @@ var Goal = /*#__PURE__*/function () {
     }
   }, {
     key: "render",
-    value: function render() {
-      return "<div class=\"goal-form\">\n                <div class=\"row m-2\">\n                    <h5 class=\"col-5\">Goal: ".concat(this.title, "</h5>\n                    <h5 class=\"col-5\">Starting from: ").concat(this.startFrom, " to ").concat(this.endAt, "</h5>\n                    <button class=\"btn btn-info col-1\" name=\"onCarot\"><i class=\"bi bi-caret-left-fill\"></i></button>\n                    <button class=\"btn btn-secondary col-1 visually-hidden\" name=\"offCarot\"><i class=\"bi bi-caret-down\"></i></button>\n                    <button class=\"btn btn-danger col-1\" name=\"deleteGoal\"><i class=\"bi bi-trash3-fill\"></i></button>\n                </div>\n                <div class=\"row m-1 p-1 pe-3 visually-hidden\" style=\"background-color: #636363;\" name=\"goalDetails\">\n                    <div id=\"goalProgress\">\n                        <div id=\"currentProgress\"></div>\n                    </div>\n                    <div class=\"rounded-3 p-1 m-1\" style=\"background-color: #dddddd;\">").concat(this.body, "</div>\n                </div>\n            </div>");
+    value: function render(index) {
+      return "<div class=\"goal-form\">\n                <div class=\"row m-2\">\n                    <h5 class=\"col-5\">Goal: ".concat(this.title, "</h5>\n                    <h5 class=\"col-5\">Starting from: ").concat(this.startFrom, " to ").concat(this.endAt, "</h5>\n                    <button class=\"btn btn-info col-1\" name=\"onCarot\" data-action=\"show\" data-index=\"").concat(index, "\"><i class=\"bi bi-caret-left-fill\"></i></button>\n                    <button class=\"btn btn-secondary col-1 visually-hidden\" name=\"offCarot\" data-action=\"hide\" data-index=\"").concat(index, "\"><i class=\"bi bi-caret-down\"></i></button>\n                    <button class=\"btn btn-danger col-1\" name=\"deleteGoal data-action=\"delete\" data-index=\"").concat(index, "\"\"><i class=\"bi bi-trash3-fill\"></i></button>\n                </div>\n                <div class=\"row m-1 p-1 pe-3 visually-hidden\" style=\"background-color: #636363;\" name=\"goalDetails\">\n                    <div id=\"goalProgress\">\n                        <div id=\"currentProgress\"></div>\n                    </div>\n                    <div class=\"rounded-3 p-1 m-1\" style=\"background-color: #dddddd;\">").concat(this.body, "</div>\n                </div>\n            </div>");
     }
   }], [{
     key: "newFromForm",

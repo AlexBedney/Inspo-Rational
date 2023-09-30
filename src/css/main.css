@@ -102,3 +102,7 @@ body {
   height: 30px;
   background-image: linear-gradient(bottom right, rgb(6, 173, 0), rgb(43, 255, 0));
 }
+
+.is-invalid {
+  background-color: #ff0000;
+}

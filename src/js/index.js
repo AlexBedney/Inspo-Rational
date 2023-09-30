@@ -12,5 +12,6 @@ import QuoteGen from './QuoteGen';
 window.addEventListener("load", ()=>{
     var quoteInit = new QuoteGen();
     var indexInit = new App();
+    document.addEventListener("click", indexInit);
 }
 );
