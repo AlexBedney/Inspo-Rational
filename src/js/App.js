@@ -1,4 +1,5 @@
 import Goal from "./Goal";
+import LocalStorage from "./LocalStorage";
 
 class App {
     // constructor to initialize all global vars and methods
@@ -9,23 +10,16 @@ class App {
         this.$addGoalBtn = document.getElementById("addGoal");
         this.$goalForm = document.getElementById("goalForm");
 
-        //this.hideForm = this.hideForm.bind(this);
-        //this.initForm = this.initForm.bind(this);
-        //this.newFromForm = this.newFromForm.bind(this);
-        //this.$addGoalBtn.onclick = Goal.initForm;
-
         this.$onCarots = document.getElementsByName("onCarot");
         this.$offCarots = document.getElementsByName("offCarot");
         this.$goalDetails = document.getElementsByName("goalDetails");
+        
+        this.localStorage = new LocalStorage();
         this.form = this.$goalForm;
         this.addGoalBtn = this.$addGoalBtn;
 
-        this.savedGoals = this.loadGoals();
-        if (!this.savedGoals || this.savedGoals.length == 0) {
-            this.savedGoals = [
-                Goal.newDefaultGoal()
-            ];
-        }
+        this.savedGoals = this.localStorage.fillGoalList([]);
+        
         this.renderGoals(this.savedGoals);
     }
 
@@ -54,10 +48,9 @@ class App {
             if(!isValid) {
                 return;
             }
-            //console.log(formData.values());
             let formData = new FormData(this.form);
             let newGoal = Goal.newFromForm(formData);
-            // let goal = LocalStorage.save(newGoal);
+            LocalStorage.storeGoal(newGoal);
             // LocalStorage.save should also append an index variable to access specific goals
             return;
         }
@@ -82,18 +75,6 @@ class App {
             QuoteGen.refresh();
             return;
         }
-        
-        //
-        // <icon data-action="delete-goal" data-index="1" />
-        // One event listener to show previously stored event
-        // Another event listener to hide details
-
-        // one event listener to delete events.
-        /*
-        for (var index = 0; index < this.savedGoals.length; index++) {
-            this.$onCarots[index].onclick = this.showDetails.bind(this, index);
-            this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
-        }/**/
     }
 
     loadGoals() {
