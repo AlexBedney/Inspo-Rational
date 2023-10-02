@@ -98,13 +98,14 @@ class Goal {
         let nextDd = today.getDate() + 1;
 
         if (dd < 10) dd = '0' + dd;
+        if (nextDd < 10) nextDd = '0' + nextDd;
         if (mm < 10) mm = '0' + mm;
 
         let goal = {
             index: 0,
             title: "Create A New Goal",
-            startFrom: dd + "/" + mm + "/" + yyyy,
-            endAt: nextDd + "/" + mm + "/" + yyyy,
+            startFrom: yyyy + "-" + mm + "-" + dd,
+            endAt: yyyy + "-" + mm + "-" + nextDd,
             body: "Create a new goal for myself to eventually reach, that would be really cool."
         }
 

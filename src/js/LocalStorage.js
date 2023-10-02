@@ -5,13 +5,13 @@ class LocalStorage {
 
     }
 
-    fillGoalList(list) {
+    fillGoalList() {
         if(!localStorage["goalsList"]) {
             return [
-                Goal.newDefaultGoal
+                Goal.newDefaultGoal()
             ];
         }
-        list = JSON.parse(localStorage["goalsList"]);
+        let list = JSON.parse(localStorage["goalsList"]);
 
         return list;
     }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspo Rational</title>
+</head>
+<body>
+    <div class="app-container" id="app-container">
+        <div class="quote-container visually-hidden" id="quoteContainer">
+            <i class="bi bi-arrow-clockwise quote-refresh" id="quoteRefresh"></i>
+            <h2 class="quote-body" id="quoteBody">"I cannot tell a lie. I cut down the cherry tree." - George Washington</h2>
+        </div>
+        <div class="goal-list">
+            <div class="row">
+                <button class="green-button float-end m-1 ms-3 col-auto" id="addGoal" data-action="ux-toggle-goal-form"> Add A Goal + </button>
+            </div>
+            <form class="goal-form visually-hidden" id="goalForm">
+                <div class="row m-2">
+                    <label class="col-2" for="title">Goal To Meet:</label>
+                    <input class="col-lg-9 col-sm-8 col-7"
+                    type="input" id="title" name="title" 
+                    value="" required />
+                </div>
+
+                <div class="row m-2">
+                    <label class="col-2" for="start">Starting from:</label>
+                    <input class="col-4"
+                    type="date" id="start" name="start" 
+                    value="" required />
+
+                    <label class="col-1" for="end">Until:</label>
+                    <input class="col-4"
+                    type="date" id="end" name="end" 
+                    value="" required />
+                </div>
+
+                <div class="row m-2">
+                    <label class="col-2" for="body">Goal details:</label>
+                    <textarea class="col-9" style="height: 100px;"
+                    type="text" id="body" name="body"></textarea>
+                </div>
+                
+                <button type="button" class="btn btn-success m-1" id="submitButton" data-action="create">Create goal</button>
+                <button type="reset" class="btn btn-secondary m-1">Clear goal</button>
+            </form>
+
+            <div id="goalList"></div>
+        </div>
+  </div>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="vendors-node_modules_bootstrap_dist_js_bootstrap_esm_js-node_modules_bootstrap_dist_css_boots-bd9352.js"></script><script defer src="index.js"></script></body>
+</html>

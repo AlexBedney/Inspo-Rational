@@ -18,7 +18,7 @@ class App {
         this.form = this.$goalForm;
         this.addGoalBtn = this.$addGoalBtn;
 
-        this.savedGoals = this.localStorage.fillGoalList([]);
+        this.savedGoals = this.localStorage.fillGoalList();
         
         this.renderGoals(this.savedGoals);
     }
@@ -26,7 +26,7 @@ class App {
     handleEvent(e) {
         // Careful, any this. will be ignored and alienate any functions to it inside, hence why creating a goal isn't here
         // let isClick = e.type == "click";
-        let target = event.target;
+        let target = e.target;
     
         // HTML5 data attributes;
         let data = target.dataset;
