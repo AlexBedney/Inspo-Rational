@@ -57,10 +57,6 @@ class Goal {
 
         return true;
     }
-
-    toJson() {
-        json.stringify(this);
-    }
     
     delete(goal) {
         var goalIndex
@@ -102,7 +98,6 @@ class Goal {
         if (mm < 10) mm = '0' + mm;
 
         let goal = {
-            index: 0,
             title: "Create A New Goal",
             startFrom: yyyy + "-" + mm + "-" + dd,
             endAt: yyyy + "-" + mm + "-" + nextDd,

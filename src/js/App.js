@@ -50,8 +50,10 @@ class App {
             }
             let formData = new FormData(this.form);
             let newGoal = Goal.newFromForm(formData);
-            LocalStorage.storeGoal(newGoal);
-            // LocalStorage.save should also append an index variable to access specific goals
+            this.localStorage.storeGoal(newGoal);
+
+            // Run this by team to see if good idea, works well for testing so might do over console logs.
+            alert("Goal successfully added to local storage.");
             return;
         }
 
@@ -95,9 +97,11 @@ class App {
 
     renderGoals(goals) {
         var goalHtml = "";
+        var tempGoalObj;
 
         for (var index = 0; index < goals.length; index++) {
-            goalHtml += goals[index].render(index);
+            tempGoalObj = new Goal(goals[index]);
+            goalHtml += tempGoalObj.render(index);
         }
 
         this.$goalList.innerHTML = goalHtml;

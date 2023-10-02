@@ -11,12 +11,6 @@ class QuoteGen {
         this.getStoicQuote = this.getStoicQuote.bind(this);
 
         this.getStoicQuote();
-        this.addQuoteListeners();
-    }
-
-    addQuoteListeners() {
-        this.$qteRfrsh.style.cursor = 'pointer';
-        this.$qteRfrsh.onclick = this.getStoicQuote;
     }
 
     getStoicQuote() {
@@ -36,6 +30,7 @@ class QuoteGen {
             this.$qteBody.innerHTML = "Error in fetching quote :(";
         });
     }
+    // add render for quote class, takes in quote as param, return html
 }
 
 export default QuoteGen;
