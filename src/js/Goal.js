@@ -4,16 +4,20 @@ const regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
 
 class Goal {
     // Instance variables
+    #superSecure = 5;
     title;
-    startFrom;
-    endAt;
     body;
+    start;
+    end;
 
     constructor(obj) {
+        if (!obj || obj == null) {
+            return;
+        }
         this.title = obj.title;
-        this.startFrom = obj.startFrom;
-        this.endAt = obj.endAt;
         this.body = obj.body;
+        this.start = obj.start;
+        this.end = obj.end;
         
         // Form fields
         this.$submitBtn = document.getElementById("submitButton");
@@ -22,9 +26,9 @@ class Goal {
     static newFromForm(formData) {
         let newGoalObj = {
             title: formData.get("title"),
+            body: formData.get("body"),
             start: formData.get("start"),
             end: formData.get("end"),
-            body: formData.get("body"),
         }
 
         let newGoal = new Goal(newGoalObj);
@@ -85,6 +89,16 @@ class Goal {
             </div>`;
     }
 
+    toJson() {
+        return {
+            title: this.title,
+            body: this.body,
+            start: this.start,
+            end: this.end,
+            foo: "bar"
+        };
+    }
+
     static newDefaultGoal() {
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -99,9 +113,9 @@ class Goal {
 
         let goal = {
             title: "Create A New Goal",
-            startFrom: yyyy + "-" + mm + "-" + dd,
-            endAt: yyyy + "-" + mm + "-" + nextDd,
-            body: "Create a new goal for myself to eventually reach, that would be really cool."
+            body: "Create a new goal for myself to eventually reach, that would be really cool.",
+            start: yyyy + "-" + mm + "-" + dd,
+            end: yyyy + "-" + mm + "-" + nextDd
         }
 
         let defaultGoal = new Goal(goal);

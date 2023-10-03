@@ -38,7 +38,7 @@ class App {
         let index = data.index;
     
         if ("delete" == action) {
-            this.localStorage.delete("goalsList", index);
+            this.localStorage.deleteGoal(index);
             return;
         }
 
@@ -48,6 +48,9 @@ class App {
                 return;
             }
             let formData = new FormData(this.form);
+            for (const value of formData.values()) {
+                console.log(value);
+              }
             let newGoal = Goal.newFromForm(formData);
             this.localStorage.storeGoal(newGoal);
 

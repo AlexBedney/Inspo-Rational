@@ -30,17 +30,17 @@ class LocalStorage {
         return JSON.parse(localStorage["goalsList"]);
     }
 
-    addGoal(goal) { 
-
+    // Turns goals to JSON stringified array
+    toJson(objs) {
+        let willBeSerialized = objs.map(function(o) {
+            return o.toJson ? o.toJson() : o;
+        });
+        return JSON.stringify(willBeSerialized);
     }
 
-    toJson(goals) {
-        return JSON.stringify(goals);
-    }
 
-
-    deleteGoal(goal) {
-        
+    deleteGoal(goalindex) {
+        // for(var i = 0; i < )
     }
 
     // Takes in a goal, gives it an index, and stores it into locaStorage
