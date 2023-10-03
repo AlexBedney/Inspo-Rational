@@ -38,8 +38,7 @@ class App {
         let index = data.index;
     
         if ("delete" == action) {
-            // LocalStorage.delete("goalsList", index);
-            localStorage.delete("goalsList", index);
+            this.localStorage.delete("goalsList", index);
             return;
         }
 

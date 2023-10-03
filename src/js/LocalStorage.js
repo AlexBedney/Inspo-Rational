@@ -40,7 +40,7 @@ class LocalStorage {
 
 
     deleteGoal(goal) {
-
+        
     }
 
     // Takes in a goal, gives it an index, and stores it into locaStorage
