@@ -1,5 +1,6 @@
 import Goal from "./Goal";
 import LocalStorage from "./LocalStorage";
+const GOAL_LIST_NAME = "goalsList";
 
 class App {
     // constructor to initialize all global vars and methods
@@ -14,11 +15,10 @@ class App {
         this.$offCarots = document.getElementsByName("offCarot");
         this.$goalDetails = document.getElementsByName("goalDetails");
         
-        this.localStorage = new LocalStorage();
         this.form = this.$goalForm;
         this.addGoalBtn = this.$addGoalBtn;
 
-        this.savedGoals = this.localStorage.fillGoalList();
+        this.savedGoals = LocalStorage.getArray(GOAL_LIST_NAME);
         
         this.renderGoals(this.savedGoals);
     }
@@ -52,7 +52,7 @@ class App {
                 console.log(value);
               }
             let newGoal = Goal.newFromForm(formData);
-            this.localStorage.storeGoal(newGoal);
+            LocalStorage.store(, newGoal);
 
             // Run this by team to see if good idea, works well for testing so might do over console logs.
             alert("Goal successfully added to local storage.");

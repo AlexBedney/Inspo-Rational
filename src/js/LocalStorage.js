@@ -1,55 +1,42 @@
-import Goal from "./Goal";
-
+// Class allowing access methods to alter localStorage arrays by name
 class LocalStorage {
-    constructor() {
+    // Default constructor that doesn't do anything
+    constructor() {}
 
+    // returns a array with the name passed in, will return empty array if null
+    static getArray(arrayName) {
+        return !localStorage[arrayName] ? [] : this.getParsedLocalStorage(arrayName);
     }
 
-    fillGoalList() {
-        let list;
-        if(!localStorage["goalsList"]) {
-            list = [
-                Goal.newDefaultGoal()
-            ];
-            list[0].index = 0;
-            this.setLocalStorage(list);
-            return list;
-        }
-        list = this.getParsedLocalStorage();
-
-        return list;
-    }
-
-    // Setting localStorage array to contain toJson goals from passed in list
-    setLocalStorage(goalList) {
-        localStorage["goalsList"] = this.toJson(goalList);
+    // Setting localStorage array to contain JSON objects from passed in array
+    static setLocalStorage(arrayName, objs) {
+        localStorage[arrayName] = this.toJson(objs);
     }
     
-    // returns the parsing command for ease of changing it and allowing universal use
-    getParsedLocalStorage() {
-        return JSON.parse(localStorage["goalsList"]);
+    // returns the passed array name parsed to JSON
+    static getParsedLocalStorage(arrayName) {
+        return JSON.parse(localStorage[arrayName]);
     }
 
-    // Turns goals to JSON stringified array
-    toJson(objs) {
+    // Turns passed object array to JSON stringified array, if object doesn't have toJson() method, it doesn't alter it
+    static toJson(objs) {
         let willBeSerialized = objs.map(function(o) {
             return o.toJson ? o.toJson() : o;
         });
         return JSON.stringify(willBeSerialized);
     }
 
-
-    deleteGoal(goalindex) {
-        // for(var i = 0; i < )
+    // Deletes an object from a locally stored array
+    static delete(arrayName, obj) {
+        localStorage[arrayName].removeItem(obj);
     }
 
-    // Takes in a goal, gives it an index, and stores it into locaStorage
-    storeGoal(goal) {
-        let goals = this.getParsedLocalStorage();
-        goal.index = (goals[goals.length - 1].index) + 1;
-        goals.push(goal);
+    // Takes in an object, and stores it into localStorage
+    static store(arrayName, obj) {
+        let objs = this.getParsedLocalStorage();
+        objs.push(obj);
 
-        this.setLocalStorage(goals);
+        this.setLocalStorage(arrayName, objs);
     }
 }
 

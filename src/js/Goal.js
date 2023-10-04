@@ -4,7 +4,6 @@ const regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
 
 class Goal {
     // Instance variables
-    #superSecure = 5;
     title;
     body;
     start;
@@ -94,8 +93,7 @@ class Goal {
             title: this.title,
             body: this.body,
             start: this.start,
-            end: this.end,
-            foo: "bar"
+            end: this.end
         };
     }
 
