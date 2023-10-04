@@ -27,13 +27,15 @@ class LocalStorage {
     }
 
     // Deletes an object from a locally stored array
-    static delete(arrayName, obj) {
-        localStorage[arrayName].removeItem(obj);
+    static delete(arrayName, objs, obj) {
+        let objIndex = objs.indexOf(obj);
+        objs.splice(objIndex, 1);
+        this.setLocalStorage(arrayName, objs);
     }
 
     // Takes in an object, and stores it into localStorage
     static store(arrayName, obj) {
-        let objs = this.getParsedLocalStorage();
+        let objs = this.getParsedLocalStorage(arrayName);
         objs.push(obj);
 
         this.setLocalStorage(arrayName, objs);

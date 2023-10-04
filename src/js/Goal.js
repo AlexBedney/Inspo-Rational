@@ -77,7 +77,7 @@ class Goal {
                     <h5 class="col-5">Starting from: ${this.startFrom} to ${this.endAt}</h5>
                     <button class="btn btn-info col-1" name="onCarot" data-action="show" data-index="${index}"><i class="bi bi-caret-left-fill"></i></button>
                     <button class="btn btn-secondary col-1 visually-hidden" name="offCarot" data-action="hide" data-index="${index}"><i class="bi bi-caret-down"></i></button>
-                    <button class="btn btn-danger col-1" name="deleteGoal data-action="delete" data-index="${index}""><i class="bi bi-trash3-fill"></i></button>
+                    <button class="btn btn-danger col-1" name="deleteGoal" data-action="delete" data-index="${index}""><i class="bi bi-trash3-fill"></i></button>
                 </div>
                 <div class="row m-1 p-1 pe-3 visually-hidden" style="background-color: #636363;" name="goalDetails">
                     <div id="goalProgress">
