@@ -18,6 +18,11 @@ class App {
         this.form = this.$goalForm;
         this.addGoalBtn = this.$addGoalBtn;
 
+        // if LcoalStorage has nothing, make a default array to set it to
+        if (LocalStorage.getArray(GOAL_LIST_NAME).length == 0) {
+            LocalStorage.setLocalStorage(GOAL_LIST_NAME, [Goal.newDefaultGoal()]);
+        }
+
         this.savedGoals = LocalStorage.getArray(GOAL_LIST_NAME);
         
         this.renderGoals(this.savedGoals);
@@ -38,7 +43,7 @@ class App {
         let index = data.index;
     
         if ("delete" == action) {
-            this.localStorage.deleteGoal(index);
+            LocalStorage.delete(GOAL_LIST_NAME)
             return;
         }
 
@@ -48,11 +53,8 @@ class App {
                 return;
             }
             let formData = new FormData(this.form);
-            for (const value of formData.values()) {
-                console.log(value);
-              }
             let newGoal = Goal.newFromForm(formData);
-            LocalStorage.store(, newGoal);
+            LocalStorage.store(GOAL_LIST_NAME, newGoal);
 
             // Run this by team to see if good idea, works well for testing so might do over console logs.
             alert("Goal successfully added to local storage.");
