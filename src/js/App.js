@@ -1,4 +1,5 @@
 import Goal from "./Goal";
+import QuoteGen from "./QuoteGen";
 import LocalStorage from "./LocalStorage";
 const GOAL_LIST_NAME = "goalsList";
 
@@ -10,6 +11,8 @@ class App {
         this.$goalDelete = document.getElementsByName("deleteGoal");
         this.$addGoalBtn = document.getElementById("addGoal");
         this.$goalForm = document.getElementById("goalForm");
+        this.$clearGoalsBtn = document.getElementById("clearGoals");
+        this.$clearConfirmBtn = document.getElementById("clearConfirm");
 
         this.$onCarots = document.getElementsByName("onCarot");
         this.$offCarots = document.getElementsByName("offCarot");
@@ -43,9 +46,9 @@ class App {
         let index = data.index;
     
         if ("delete" == action) {
-            console.log("deleting");
             LocalStorage.delete(GOAL_LIST_NAME, this.savedGoals, this.savedGoals[index]);
-            return;
+            alert("Deleted one of your goals.");
+            return new App();
         }
 
         if("create" == action) {
@@ -59,7 +62,17 @@ class App {
 
             // Run this by team to see if good idea, works well for testing so might do over console logs.
             alert("Goal successfully added to local storage.");
-            return;
+            return new App();
+        }
+
+        if ("clearGoals" == action) {
+            this.$clearConfirmBtn.classList.toggle("visually-hidden");
+        }
+
+        if ("clearConfirm" == action) {
+            this.$clearConfirmBtn.classList.toggle("visually-hidden");
+            LocalStorage.clear(GOAL_LIST_NAME);
+            return new App();
         }
 
         if ("ux-toggle-goal-form" == action) {

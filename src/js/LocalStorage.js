@@ -40,6 +40,11 @@ class LocalStorage {
 
         this.setLocalStorage(arrayName, objs);
     }
+
+    // Clears a passed in last name from localStorage
+    static clear(arrayName) {
+        localStorage.removeItem(arrayName);
+    }
 }
 
 export default LocalStorage;
