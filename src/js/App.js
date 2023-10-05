@@ -1,7 +1,9 @@
 import Goal from "./Goal";
 import Quote from "./Quote";
 import LocalStorage from "./LocalStorage";
+const QUOTE_LIST_NAME = "quotesList";
 const GOAL_LIST_NAME = "goalsList";
+const QUOTE_COUNT = 10;
 
 class App {
     // constructor to initialize all global vars and methods
@@ -92,7 +94,17 @@ class App {
         }
     
         if ("refreshQuote" == action) {
-            Quote.refresh();
+            let indexInt = parseInt(index);
+            if (indexInt == QUOTE_COUNT - 2) {
+                Quote.loadStorageWithQuotes(QUOTE_COUNT);
+                data.index = 0;
+                let newQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, 0);
+                Quote.render(newQuote);
+                return;
+            }
+            data.index = "" + (indexInt + 1);
+            let newQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, indexInt + 1);
+            Quote.render(newQuote);
             return;
         }
     }

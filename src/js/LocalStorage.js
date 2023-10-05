@@ -6,6 +6,8 @@ class LocalStorage {
     // Grabs one object from the passed in list and index of localStorage and returns it
     static getSingleObject(arrayName, index) {
         let objs = this.getArray(arrayName);
+        console.log(objs);
+        console.log(index);
         return objs[index];
     }
 

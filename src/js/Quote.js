@@ -30,6 +30,7 @@ class Quote {
         Quote.render(renderQuote);
     }
 
+    // Takes in an array of quotes to which it will add upon it a new quote object using data's returned values
     static getStoicQuote(quoteArray) {
         const requestOptions = {
             method: 'GET',

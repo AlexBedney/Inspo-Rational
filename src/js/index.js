@@ -8,11 +8,11 @@ import 'bootstrap';
 // Import Application
 import App from './App';
 import Quote from './Quote';
-import LocalStorage from './LocalStorage';
-const QUOTE_LIST_NAME = "quotesList";
+
+const QUOTE_COUNT = 10;
 
 window.addEventListener("load", ()=>{
-    Quote.loadStorageWithQuotes(10);
+    Quote.loadStorageWithQuotes(QUOTE_COUNT);
     var indexInit = new App();
     document.addEventListener("click", indexInit);
 }
