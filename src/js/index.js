@@ -8,6 +8,8 @@ import 'bootstrap';
 // Import Application
 import App from './App';
 import Quote from './Quote';
+import LocalStorage from './LocalStorage';
+const QUOTE_LIST_NAME = "quotesList";
 
 window.addEventListener("load", ()=>{
     Quote.loadStorageWithQuotes(10);

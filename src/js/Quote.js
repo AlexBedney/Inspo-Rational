@@ -25,6 +25,9 @@ class Quote {
         }
         const results = await Quote.waitForListFill(MILISECOND_WAIT);
         LocalStorage.setLocalStorage(QUOTE_LIST_NAME, fetchedQuotes);
+
+        let renderQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, 0);
+        Quote.render(renderQuote);
     }
 
     static getStoicQuote(quoteArray) {
@@ -60,9 +63,9 @@ class Quote {
     }
 
     // add render for quote class, takes in quote as param, return html
-    render(quote) {
-        this.$qteBody.innerHTML = "\"" + quote.quote + "\" - " + quote.author;
-        this.$qteCntr.classList.remove("visually-hidden");
+    static render(q) {
+        document.getElementById("quoteBody").innerHTML = "\"" + q.quote + "\" - " + q.author;
+        document.getElementById("quoteContainer").classList.remove("visually-hidden");
     }
 
     static waitForListFill(waitPeriod) {

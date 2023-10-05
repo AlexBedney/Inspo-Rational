@@ -3,6 +3,12 @@ class LocalStorage {
     // Default constructor that doesn't do anything
     constructor() {}
 
+    // Grabs one object from the passed in list and index of localStorage and returns it
+    static getSingleObject(arrayName, index) {
+        let objs = this.getArray(arrayName);
+        return objs[index];
+    }
+
     // returns a array with the name passed in, will return empty array if null
     static getArray(arrayName) {
         return !localStorage[arrayName] ? [] : this.getParsedLocalStorage(arrayName);
