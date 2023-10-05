@@ -13,7 +13,7 @@
         </div>
         <div class="goal-list">
             <div class="row">
-                <button class="green-button float-end m-1 ms-3 col-auto" id="addGoal"> Add A Goal + </button>
+                <button class="green-button float-end m-1 ms-3 col-auto" id="addGoal" data-action="add"> Add A Goal + </button>
             </div>
             <form class="goal-form visually-hidden" id="goalForm">
                 <div class="row m-2">
@@ -41,7 +41,7 @@
                     type="text" id="body" name="body"></textarea>
                 </div>
                 
-                <button type="button" class="btn btn-success m-1" id="submitButton">Create goal</button>
+                <button type="button" class="btn btn-success m-1" id="submitButton" data-action="create">Create goal</button>
                 <button type="reset" class="btn btn-secondary m-1">Clear goal</button>
             </form>
 
