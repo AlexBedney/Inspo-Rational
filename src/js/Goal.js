@@ -5,15 +5,18 @@ const regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
 class Goal {
     // Instance variables
     title;
-    startFrom;
-    endAt;
     body;
+    start;
+    end;
 
     constructor(obj) {
+        if (!obj || obj == null) {
+            return;
+        }
         this.title = obj.title;
-        this.startFrom = obj.startFrom;
-        this.endAt = obj.endAt;
         this.body = obj.body;
+        this.start = obj.start;
+        this.end = obj.end;
         
         // Form fields
         this.$submitBtn = document.getElementById("submitButton");
@@ -22,9 +25,9 @@ class Goal {
     static newFromForm(formData) {
         let newGoalObj = {
             title: formData.get("title"),
+            body: formData.get("body"),
             start: formData.get("start"),
             end: formData.get("end"),
-            body: formData.get("body"),
         }
 
         let newGoal = new Goal(newGoalObj);
@@ -57,10 +60,6 @@ class Goal {
 
         return true;
     }
-
-    toJson() {
-        //json.stringify(this)
-    }
     
     delete(goal) {
         var goalIndex
@@ -75,10 +74,10 @@ class Goal {
         return `<div class="goal-form">
                 <div class="row m-2">
                     <h5 class="col-5">Goal: ${this.title}</h5>
-                    <h5 class="col-5">Starting from: ${this.startFrom} to ${this.endAt}</h5>
+                    <h5 class="col-5">Starting from: ${this.start} to ${this.end}</h5>
                     <button class="btn btn-info col-1" name="onCarot" data-action="show" data-index="${index}"><i class="bi bi-caret-left-fill"></i></button>
                     <button class="btn btn-secondary col-1 visually-hidden" name="offCarot" data-action="hide" data-index="${index}"><i class="bi bi-caret-down"></i></button>
-                    <button class="btn btn-danger col-1" name="deleteGoal data-action="delete" data-index="${index}""><i class="bi bi-trash3-fill"></i></button>
+                    <button class="btn btn-danger col-1" name="deleteGoal" data-action="delete" data-index="${index}""><i class="bi bi-trash3-fill"></i></button>
                 </div>
                 <div class="row m-1 p-1 pe-3 visually-hidden" style="background-color: #636363;" name="goalDetails">
                     <div id="goalProgress">
@@ -87,6 +86,15 @@ class Goal {
                     <div class="rounded-3 p-1 m-1" style="background-color: #dddddd;">${this.body}</div>
                 </div>
             </div>`;
+    }
+
+    toJson() {
+        return {
+            title: this.title,
+            body: this.body,
+            start: this.start,
+            end: this.end
+        };
     }
 
     static newDefaultGoal() {
@@ -98,13 +106,14 @@ class Goal {
         let nextDd = today.getDate() + 1;
 
         if (dd < 10) dd = '0' + dd;
+        if (nextDd < 10) nextDd = '0' + nextDd;
         if (mm < 10) mm = '0' + mm;
 
         let goal = {
             title: "Create A New Goal",
-            startFrom: dd + "/" + mm + "/" + yyyy,
-            endAt: nextDd + "/" + mm + "/" + yyyy,
-            body: "Create a new goal for myself to eventually reach, that would be really cool."
+            body: "Create a new goal for myself to eventually reach, that would be really cool.",
+            start: yyyy + "-" + mm + "-" + dd,
+            end: yyyy + "-" + mm + "-" + nextDd
         }
 
         let defaultGoal = new Goal(goal);

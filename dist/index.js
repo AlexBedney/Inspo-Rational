@@ -13,6 +13,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _Goal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Goal */ "./src/js/Goal.js");
+/* harmony import */ var _LocalStorage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LocalStorage */ "./src/js/LocalStorage.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
@@ -20,84 +21,72 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
+
 var App = /*#__PURE__*/function () {
   // constructor to initialize all global vars and methods
   function App() {
     _classCallCheck(this, App);
+    this.$submitBtn = document.getElementById("submitButton");
     this.$goalList = document.getElementById("goalList");
     this.$goalDelete = document.getElementsByName("deleteGoal");
     this.$addGoalBtn = document.getElementById("addGoal");
     this.$goalForm = document.getElementById("goalForm");
-    this.savedGoals = this.loadGoals();
-    if (!this.savedGoals || this.savedGoals.length == 0) {
-      this.savedGoals = [_Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newDefaultGoal()];
-    }
+    this.$onCarots = document.getElementsByName("onCarot");
+    this.$offCarots = document.getElementsByName("offCarot");
+    this.$goalDetails = document.getElementsByName("goalDetails");
+    this.localStorage = new _LocalStorage__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    this.form = this.$goalForm;
+    this.addGoalBtn = this.$addGoalBtn;
+    this.savedGoals = this.localStorage.fillGoalList([]);
     this.renderGoals(this.savedGoals);
-    this.addListeners();
   }
   _createClass(App, [{
-    key: "addListeners",
-    value: function addListeners() {
-      //this.hideForm = this.hideForm.bind(this);
-      //this.initForm = this.initForm.bind(this);
-      //this.newFromForm = this.newFromForm.bind(this);
-      //this.$addGoalBtn.onclick = Goal.initForm;
-      this.$submitBtn.onclick = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newFromForm;
-      var $onCarots = document.getElementsByName("onCarot");
-      var $offCarots = document.getElementsByName("offCarot");
-      var $goalDetails = document.getElementsByName("goalDetails");
-      var form = this.$goalForm;
-      var addGoalBtn = this.$addGoalBtn;
-
+    key: "handleEvent",
+    value: function handleEvent(e) {
       // Careful, any this. will be ignored and alienate any functions to it inside, hence why creating a goal isn't here
-      document.addEventListener("click", function (event) {
-        // let isClick = e.type == "click";
-        var target = event.target;
+      // let isClick = e.type == "click";
+      var target = event.target;
 
-        // HTML5 data attributes;
-        var data = target.dataset;
+      // HTML5 data attributes;
+      var data = target.dataset;
 
-        // No action to take if data is null.
-        if (!data) return;
-        var action = data.action; // What action to take?
-        var index = data.index;
-        if ("delete" == action) {
-          localStorage["delete"]("goalsList", index);
+      // No action to take if data is null.
+      if (!data) return;
+      var action = data.action; // What action to take?
+      var index = data.index;
+      if ("delete" == action) {
+        // LocalStorage.delete("goalsList", index);
+        localStorage["delete"]("goalsList", index);
+        return;
+      }
+      if ("create" == action) {
+        var isValid = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].validateForm(this.form);
+        if (!isValid) {
           return;
         }
-        if ("add" == action) {
-          form.classList.remove("visually-hidden");
-          addGoalBtn.dataset.action = "disable";
-        }
-        if ("disable" == action) {
-          form.classList.add("visually-hidden");
-          addGoalBtn.dataset.action = "add";
-        }
-        if ("hide" == action) {
-          $goalDetails[index].classList.add("visually-hidden");
-          $onCarots[index].classList.remove("visually-hidden");
-          $offCarots[index].classList.add("visually-hidden");
-        }
-        if ("show" == action) {
-          $goalDetails[index].classList.remove("visually-hidden");
-          $onCarots[index].classList.add("visually-hidden");
-          $offCarots[index].classList.remove("visually-hidden");
-        }
-        if ("refreshQuote" == action) {
-          QuoteGen.refresh();
-          return;
-        }
-        // <icon data-action="delete-goal" data-index="1" />
-      });
-      // One event listener to show previously stored event
-      // Another event listener to hide details
-
-      // one event listener to delete events.
-      /*
-      for (var index = 0; index < this.savedGoals.length; index++) {
-          this.$onCarots[index].onclick = this.showDetails.bind(this, index);
-          this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
-      }/**/
+        var formData = new FormData(this.form);
+        var newGoal = _Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newFromForm(formData);
+        _LocalStorage__WEBPACK_IMPORTED_MODULE_1__["default"].storeGoal(newGoal);
+        // LocalStorage.save should also append an index variable to access specific goals
+        return;
+      }
+      if ("ux-toggle-goal-form" == action) {
+        this.form.classList.toggle("visually-hidden");
+      }
+      if ("hide" == action) {
+        this.$goalDetails[index].classList.add("visually-hidden");
+        this.$onCarots[index].classList.remove("visually-hidden");
+        this.$offCarots[index].classList.add("visually-hidden");
+      }
+      if ("show" == action) {
+        this.$goalDetails[index].classList.remove("visually-hidden");
+        this.$onCarots[index].classList.add("visually-hidden");
+        this.$offCarots[index].classList.remove("visually-hidden");
+      }
+      if ("refreshQuote" == action) {
+        QuoteGen.refresh();
+        return;
+      }
     }
   }, {
     key: "loadGoals",
@@ -123,26 +112,6 @@ var App = /*#__PURE__*/function () {
       }
       this.$goalList.innerHTML = goalHtml;
     }
-    /*
-    showDetails(index) {
-        this.$goalDetails[index].classList.remove("visually-hidden");
-        this.$onCarots[index].classList.add("visually-hidden");
-        this.$offCarots[index].classList.remove("visually-hidden");
-    }
-      hideDetails(index) {
-        this.$goalDetails[index].classList.add("visually-hidden");
-        this.$onCarots[index].classList.remove("visually-hidden");
-        this.$offCarots[index].classList.add("visually-hidden");
-    }
-      initForm() {
-        this.$goalForm.classList.remove("visually-hidden");
-        this.$addGoalBtn.onclick = this.hideForm;
-    }
-      hideForm() {
-        this.$goalForm.classList.add("visually-hidden");
-        this.$addGoalBtn.onclick = this.initForm;
-    }
-    */
   }]);
   return App;
 }();
@@ -168,6 +137,8 @@ function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key i
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 // Has attributes for initializing the tools and validation of new goals
+var regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
+var regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
 var Goal = /*#__PURE__*/function () {
   function Goal(obj) {
     _classCallCheck(this, Goal);
@@ -176,8 +147,6 @@ var Goal = /*#__PURE__*/function () {
     _defineProperty(this, "startFrom", void 0);
     _defineProperty(this, "endAt", void 0);
     _defineProperty(this, "body", void 0);
-    this.regTitle = /[a-zA-Z0-9_/.!?',"$#&() ]{1,50}/;
-    this.regBody = /[a-zA-Z0-9_/.!?',"$#&() ]{1,250}/;
     this.title = obj.title;
     this.startFrom = obj.startFrom;
     this.endAt = obj.endAt;
@@ -187,24 +156,9 @@ var Goal = /*#__PURE__*/function () {
     this.$submitBtn = document.getElementById("submitButton");
   }
   _createClass(Goal, [{
-    key: "validateForm",
-    value: function validateForm() {
-      if (this.regTitle.test(this.$formTitle.value)) {
-        if (this.regBody.test(this.$formBody.value)) {
-          if (this.$formStart.value != null && this.$formEnd.value != null) {
-            if (this.$formStart.value < this.$formEnd.value) {
-              return true;
-            }
-          }
-          this.$formStart.classList.add("is-invalid");
-          this.$formEnd.classList.add("is-invalid");
-        } else {
-          this.$formBody.classList.add("is-invalid");
-        }
-      } else {
-        this.$formTitle.classList.add("is-invalid");
-      }
-      return false;
+    key: "toJson",
+    value: function toJson() {
+      json.stringify(this);
     }
   }, {
     key: "delete",
@@ -224,23 +178,38 @@ var Goal = /*#__PURE__*/function () {
     }
   }], [{
     key: "newFromForm",
-    value: function newFromForm() {
-      if (this.validateForm()) {
-        var $formEl = document.getElementById("goalForm");
-        var newGoal = {
-          title: this.$formTitle.value,
-          startFrom: this.$formStart.value,
-          endAt: this.$formEnd.value,
-          body: this.$formBody.value
-        };
-        this.$formTitle.value = "";
-        this.$formStart.value = "";
-        this.$formEnd.value = "";
-        this.$formBody.value = "";
-        return newGoal;
-      } else {
-        alert("invalid fields found and marked");
+    value: function newFromForm(formData) {
+      var newGoalObj = {
+        title: formData.get("title"),
+        start: formData.get("start"),
+        end: formData.get("end"),
+        body: formData.get("body")
+      };
+      var newGoal = new Goal(newGoalObj);
+      return newGoal;
+    }
+  }, {
+    key: "validateForm",
+    value: function validateForm(form) {
+      if (!regTitle.test(form.title.value)) {
+        form.title.classList.add("is-invalid");
+        return false;
       }
+      if (form.start.value == null || form.end.value == null) {
+        form.start.classList.add("is-invalid");
+        form.end.classList.add("is-invalid");
+        return false;
+      }
+      if (form.start.value > form.end.value) {
+        form.start.classList.add("is-invalid");
+        form.end.classList.add("is-invalid");
+        return false;
+      }
+      if (!regBody.test(form.body.value)) {
+        form.body.classList.add("is-invalid");
+        return false;
+      }
+      return true;
     }
   }, {
     key: "newDefaultGoal",
@@ -254,6 +223,7 @@ var Goal = /*#__PURE__*/function () {
       if (dd < 10) dd = '0' + dd;
       if (mm < 10) mm = '0' + mm;
       var goal = {
+        index: 0,
         title: "Create A New Goal",
         startFrom: dd + "/" + mm + "/" + yyyy,
         endAt: nextDd + "/" + mm + "/" + yyyy,
@@ -266,6 +236,59 @@ var Goal = /*#__PURE__*/function () {
   return Goal;
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Goal);
+
+/***/ }),
+
+/***/ "./src/js/LocalStorage.js":
+/*!********************************!*\
+  !*** ./src/js/LocalStorage.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Goal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Goal */ "./src/js/Goal.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+
+var LocalStorage = /*#__PURE__*/function () {
+  function LocalStorage() {
+    _classCallCheck(this, LocalStorage);
+  }
+  _createClass(LocalStorage, [{
+    key: "fillGoalList",
+    value: function fillGoalList(list) {
+      if (!localStorage["goalsList"]) {
+        return [_Goal__WEBPACK_IMPORTED_MODULE_0__["default"].newDefaultGoal];
+      }
+      list = JSON.parse(localStorage["goalsList"]);
+      return list;
+    }
+  }, {
+    key: "addGoal",
+    value: function addGoal(goal) {}
+  }, {
+    key: "deleteGoal",
+    value: function deleteGoal(goal) {}
+
+    // Takes in a goal, gives it an index, and stores it into locaStorage
+  }], [{
+    key: "storeGoal",
+    value: function storeGoal(goal) {
+      var goals = JSON.parse(localStorage["goalsList"]);
+      goal.index = goals.length;
+      goals.push(goal);
+    }
+  }]);
+  return LocalStorage;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LocalStorage);
 
 /***/ }),
 
@@ -358,6 +381,7 @@ __webpack_require__.r(__webpack_exports__);
 window.addEventListener("load", function () {
   var quoteInit = new _QuoteGen__WEBPACK_IMPORTED_MODULE_4__["default"]();
   var indexInit = new _App__WEBPACK_IMPORTED_MODULE_3__["default"]();
+  document.addEventListener("click", indexInit);
 });
 
 /***/ }),
@@ -381,7 +405,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".flex-parent {\r\n  display: flex;\r\n  flex-direction: row;\r\n  flex-wrap: wrap;\r\n  justify-content: start;\r\n}\r\n\r\nbody {\r\n  background: #eeeeee;\r\n  padding: 20px;\r\n  font-family: 'Roboto', sans-serif;\r\n}\r\n\r\n.app-container {\r\n  padding: 15px;\r\n  background-color: #636363;\r\n}\r\n\r\n.quote-container {\r\n  padding: 15px;\r\n  border-top-left-radius: 30px;\r\n  border-bottom-right-radius: 30px;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.quote-body {\r\n  font-family: 'Book Antiqua', serif;\r\n  font-style: italic;\r\n}\r\n\r\n.quote-refresh {\r\n  float:right;\r\n}\r\n\r\n.green-button {\r\n  background-color: rgb(35, 161, 35);\r\n  color: #e9e9e9;\r\n  border: 1px solid rgb(65, 177, 31);\r\n  border-bottom-right-radius: 10px;\r\n  border-top-right-radius: 10px;\r\n  padding: 5px;\r\n}\r\n\r\n.goal-list {\r\n  margin-top: 15px;\r\n  padding: 15px;\r\n  background-color: #eeeeee;\r\n}\r\n\r\n.goal-form {\r\n  border: 2px solid #000;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.goal-name {\r\n  padding: 10px;\r\n}\r\n\r\n.goal-input {\r\n  flex-grow: 5;\r\n  margin-left: 15px;\r\n}\r\n\r\n.zip-form label {\r\n    margin-top: 7px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form input {\r\n    width: 20%;\r\n    margin: 0 10px;\r\n    font-size: 20px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form button {\r\n    padding: 7px 10px;\r\n    background-color: #fff;\r\n    border: 1px solid #000;\r\n    border-radius: 5px;\r\n}\r\n\r\n.details {\r\n  justify-content: flex-start;\r\n}\r\n.details > div {\r\n  padding-left: 20px;\r\n}\r\n\r\n.details > div :first-child {\r\n  padding-left: 0;\r\n}\r\n\r\n/* Code for progress bar if we can get it to work */\r\n.myProgress {\r\n  width: 100%;\r\n  background-color: grey;\r\n}\r\n\r\n.myBar {\r\n  width: 1%;\r\n  height: 30px;\r\n  background-image: linear-gradient(bottom right, rgb(6, 173, 0), rgb(43, 255, 0));\r\n}", "",{"version":3,"sources":["webpack://./src/css/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,mBAAmB;EACnB,eAAe;EACf,sBAAsB;AACxB;;AAEA;EACE,mBAAmB;EACnB,aAAa;EACb,iCAAiC;AACnC;;AAEA;EACE,aAAa;EACb,yBAAyB;AAC3B;;AAEA;EACE,aAAa;EACb,4BAA4B;EAC5B,gCAAgC;EAChC,yBAAyB;AAC3B;;AAEA;EACE,kCAAkC;EAClC,kBAAkB;AACpB;;AAEA;EACE,WAAW;AACb;;AAEA;EACE,kCAAkC;EAClC,cAAc;EACd,kCAAkC;EAClC,gCAAgC;EAChC,6BAA6B;EAC7B,YAAY;AACd;;AAEA;EACE,gBAAgB;EAChB,aAAa;EACb,yBAAyB;AAC3B;;AAEA;EACE,sBAAsB;EACtB,yBAAyB;AAC3B;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,iBAAiB;AACnB;;AAEA;IACI,eAAe;IACf,sBAAsB;AAC1B;;AAEA;IACI,UAAU;IACV,cAAc;IACd,eAAe;IACf,sBAAsB;AAC1B;;AAEA;IACI,iBAAiB;IACjB,sBAAsB;IACtB,sBAAsB;IACtB,kBAAkB;AACtB;;AAEA;EACE,2BAA2B;AAC7B;AACA;EACE,kBAAkB;AACpB;;AAEA;EACE,eAAe;AACjB;;AAEA,mDAAmD;AACnD;EACE,WAAW;EACX,sBAAsB;AACxB;;AAEA;EACE,SAAS;EACT,YAAY;EACZ,gFAAgF;AAClF","sourcesContent":[".flex-parent {\r\n  display: flex;\r\n  flex-direction: row;\r\n  flex-wrap: wrap;\r\n  justify-content: start;\r\n}\r\n\r\nbody {\r\n  background: #eeeeee;\r\n  padding: 20px;\r\n  font-family: 'Roboto', sans-serif;\r\n}\r\n\r\n.app-container {\r\n  padding: 15px;\r\n  background-color: #636363;\r\n}\r\n\r\n.quote-container {\r\n  padding: 15px;\r\n  border-top-left-radius: 30px;\r\n  border-bottom-right-radius: 30px;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.quote-body {\r\n  font-family: 'Book Antiqua', serif;\r\n  font-style: italic;\r\n}\r\n\r\n.quote-refresh {\r\n  float:right;\r\n}\r\n\r\n.green-button {\r\n  background-color: rgb(35, 161, 35);\r\n  color: #e9e9e9;\r\n  border: 1px solid rgb(65, 177, 31);\r\n  border-bottom-right-radius: 10px;\r\n  border-top-right-radius: 10px;\r\n  padding: 5px;\r\n}\r\n\r\n.goal-list {\r\n  margin-top: 15px;\r\n  padding: 15px;\r\n  background-color: #eeeeee;\r\n}\r\n\r\n.goal-form {\r\n  border: 2px solid #000;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.goal-name {\r\n  padding: 10px;\r\n}\r\n\r\n.goal-input {\r\n  flex-grow: 5;\r\n  margin-left: 15px;\r\n}\r\n\r\n.zip-form label {\r\n    margin-top: 7px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form input {\r\n    width: 20%;\r\n    margin: 0 10px;\r\n    font-size: 20px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form button {\r\n    padding: 7px 10px;\r\n    background-color: #fff;\r\n    border: 1px solid #000;\r\n    border-radius: 5px;\r\n}\r\n\r\n.details {\r\n  justify-content: flex-start;\r\n}\r\n.details > div {\r\n  padding-left: 20px;\r\n}\r\n\r\n.details > div :first-child {\r\n  padding-left: 0;\r\n}\r\n\r\n/* Code for progress bar if we can get it to work */\r\n.myProgress {\r\n  width: 100%;\r\n  background-color: grey;\r\n}\r\n\r\n.myBar {\r\n  width: 1%;\r\n  height: 30px;\r\n  background-image: linear-gradient(bottom right, rgb(6, 173, 0), rgb(43, 255, 0));\r\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ".flex-parent {\r\n  display: flex;\r\n  flex-direction: row;\r\n  flex-wrap: wrap;\r\n  justify-content: start;\r\n}\r\n\r\nbody {\r\n  background: #eeeeee;\r\n  padding: 20px;\r\n  font-family: 'Roboto', sans-serif;\r\n}\r\n\r\n.app-container {\r\n  padding: 15px;\r\n  background-color: #636363;\r\n}\r\n\r\n.quote-container {\r\n  padding: 15px;\r\n  border-top-left-radius: 30px;\r\n  border-bottom-right-radius: 30px;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.quote-body {\r\n  font-family: 'Book Antiqua', serif;\r\n  font-style: italic;\r\n}\r\n\r\n.quote-refresh {\r\n  float:right;\r\n}\r\n\r\n.green-button {\r\n  background-color: rgb(35, 161, 35);\r\n  color: #e9e9e9;\r\n  border: 1px solid rgb(65, 177, 31);\r\n  border-bottom-right-radius: 10px;\r\n  border-top-right-radius: 10px;\r\n  padding: 5px;\r\n}\r\n\r\n.goal-list {\r\n  margin-top: 15px;\r\n  padding: 15px;\r\n  background-color: #eeeeee;\r\n}\r\n\r\n.goal-form {\r\n  border: 2px solid #000;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.goal-name {\r\n  padding: 10px;\r\n}\r\n\r\n.goal-input {\r\n  flex-grow: 5;\r\n  margin-left: 15px;\r\n}\r\n\r\n.zip-form label {\r\n    margin-top: 7px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form input {\r\n    width: 20%;\r\n    margin: 0 10px;\r\n    font-size: 20px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form button {\r\n    padding: 7px 10px;\r\n    background-color: #fff;\r\n    border: 1px solid #000;\r\n    border-radius: 5px;\r\n}\r\n\r\n.details {\r\n  justify-content: flex-start;\r\n}\r\n.details > div {\r\n  padding-left: 20px;\r\n}\r\n\r\n.details > div :first-child {\r\n  padding-left: 0;\r\n}\r\n\r\n/* Code for progress bar if we can get it to work */\r\n.myProgress {\r\n  width: 100%;\r\n  background-color: grey;\r\n}\r\n\r\n.myBar {\r\n  width: 1%;\r\n  height: 30px;\r\n  background-image: linear-gradient(bottom right, rgb(6, 173, 0), rgb(43, 255, 0));\r\n}\r\n\r\n.is-invalid {\r\n  background-color: #ff0000;\r\n}", "",{"version":3,"sources":["webpack://./src/css/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,mBAAmB;EACnB,eAAe;EACf,sBAAsB;AACxB;;AAEA;EACE,mBAAmB;EACnB,aAAa;EACb,iCAAiC;AACnC;;AAEA;EACE,aAAa;EACb,yBAAyB;AAC3B;;AAEA;EACE,aAAa;EACb,4BAA4B;EAC5B,gCAAgC;EAChC,yBAAyB;AAC3B;;AAEA;EACE,kCAAkC;EAClC,kBAAkB;AACpB;;AAEA;EACE,WAAW;AACb;;AAEA;EACE,kCAAkC;EAClC,cAAc;EACd,kCAAkC;EAClC,gCAAgC;EAChC,6BAA6B;EAC7B,YAAY;AACd;;AAEA;EACE,gBAAgB;EAChB,aAAa;EACb,yBAAyB;AAC3B;;AAEA;EACE,sBAAsB;EACtB,yBAAyB;AAC3B;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,YAAY;EACZ,iBAAiB;AACnB;;AAEA;IACI,eAAe;IACf,sBAAsB;AAC1B;;AAEA;IACI,UAAU;IACV,cAAc;IACd,eAAe;IACf,sBAAsB;AAC1B;;AAEA;IACI,iBAAiB;IACjB,sBAAsB;IACtB,sBAAsB;IACtB,kBAAkB;AACtB;;AAEA;EACE,2BAA2B;AAC7B;AACA;EACE,kBAAkB;AACpB;;AAEA;EACE,eAAe;AACjB;;AAEA,mDAAmD;AACnD;EACE,WAAW;EACX,sBAAsB;AACxB;;AAEA;EACE,SAAS;EACT,YAAY;EACZ,gFAAgF;AAClF;;AAEA;EACE,yBAAyB;AAC3B","sourcesContent":[".flex-parent {\r\n  display: flex;\r\n  flex-direction: row;\r\n  flex-wrap: wrap;\r\n  justify-content: start;\r\n}\r\n\r\nbody {\r\n  background: #eeeeee;\r\n  padding: 20px;\r\n  font-family: 'Roboto', sans-serif;\r\n}\r\n\r\n.app-container {\r\n  padding: 15px;\r\n  background-color: #636363;\r\n}\r\n\r\n.quote-container {\r\n  padding: 15px;\r\n  border-top-left-radius: 30px;\r\n  border-bottom-right-radius: 30px;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.quote-body {\r\n  font-family: 'Book Antiqua', serif;\r\n  font-style: italic;\r\n}\r\n\r\n.quote-refresh {\r\n  float:right;\r\n}\r\n\r\n.green-button {\r\n  background-color: rgb(35, 161, 35);\r\n  color: #e9e9e9;\r\n  border: 1px solid rgb(65, 177, 31);\r\n  border-bottom-right-radius: 10px;\r\n  border-top-right-radius: 10px;\r\n  padding: 5px;\r\n}\r\n\r\n.goal-list {\r\n  margin-top: 15px;\r\n  padding: 15px;\r\n  background-color: #eeeeee;\r\n}\r\n\r\n.goal-form {\r\n  border: 2px solid #000;\r\n  background-color: #dddddd;\r\n}\r\n\r\n.goal-name {\r\n  padding: 10px;\r\n}\r\n\r\n.goal-input {\r\n  flex-grow: 5;\r\n  margin-left: 15px;\r\n}\r\n\r\n.zip-form label {\r\n    margin-top: 7px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form input {\r\n    width: 20%;\r\n    margin: 0 10px;\r\n    font-size: 20px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.zip-form button {\r\n    padding: 7px 10px;\r\n    background-color: #fff;\r\n    border: 1px solid #000;\r\n    border-radius: 5px;\r\n}\r\n\r\n.details {\r\n  justify-content: flex-start;\r\n}\r\n.details > div {\r\n  padding-left: 20px;\r\n}\r\n\r\n.details > div :first-child {\r\n  padding-left: 0;\r\n}\r\n\r\n/* Code for progress bar if we can get it to work */\r\n.myProgress {\r\n  width: 100%;\r\n  background-color: grey;\r\n}\r\n\r\n.myBar {\r\n  width: 1%;\r\n  height: 30px;\r\n  background-image: linear-gradient(bottom right, rgb(6, 173, 0), rgb(43, 255, 0));\r\n}\r\n\r\n.is-invalid {\r\n  background-color: #ff0000;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

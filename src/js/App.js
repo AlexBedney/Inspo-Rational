@@ -1,4 +1,7 @@
 import Goal from "./Goal";
+import QuoteGen from "./QuoteGen";
+import LocalStorage from "./LocalStorage";
+const GOAL_LIST_NAME = "goalsList";
 
 class App {
     // constructor to initialize all global vars and methods
@@ -8,31 +11,30 @@ class App {
         this.$goalDelete = document.getElementsByName("deleteGoal");
         this.$addGoalBtn = document.getElementById("addGoal");
         this.$goalForm = document.getElementById("goalForm");
-
-        //this.hideForm = this.hideForm.bind(this);
-        //this.initForm = this.initForm.bind(this);
-        //this.newFromForm = this.newFromForm.bind(this);
-        //this.$addGoalBtn.onclick = Goal.initForm;
+        this.$clearGoalsBtn = document.getElementById("clearGoals");
+        this.$clearConfirmBtn = document.getElementById("clearConfirm");
 
         this.$onCarots = document.getElementsByName("onCarot");
         this.$offCarots = document.getElementsByName("offCarot");
         this.$goalDetails = document.getElementsByName("goalDetails");
+        
         this.form = this.$goalForm;
         this.addGoalBtn = this.$addGoalBtn;
 
-        this.savedGoals = this.loadGoals();
-        if (!this.savedGoals || this.savedGoals.length == 0) {
-            this.savedGoals = [
-                Goal.newDefaultGoal()
-            ];
+        // if LcoalStorage has nothing, make a default array to set it to
+        if (LocalStorage.getArray(GOAL_LIST_NAME).length == 0) {
+            LocalStorage.setLocalStorage(GOAL_LIST_NAME, [Goal.newDefaultGoal()]);
         }
+
+        this.savedGoals = LocalStorage.getArray(GOAL_LIST_NAME);
+        
         this.renderGoals(this.savedGoals);
     }
 
     handleEvent(e) {
         // Careful, any this. will be ignored and alienate any functions to it inside, hence why creating a goal isn't here
         // let isClick = e.type == "click";
-        let target = event.target;
+        let target = e.target;
     
         // HTML5 data attributes;
         let data = target.dataset;
@@ -44,9 +46,9 @@ class App {
         let index = data.index;
     
         if ("delete" == action) {
-            // LocalStorage.delete("goalsList", index);
-            localStorage.delete("goalsList", index);
-            return;
+            LocalStorage.delete(GOAL_LIST_NAME, this.savedGoals, this.savedGoals[index]);
+            alert("Deleted one of your goals.");
+            return new App();
         }
 
         if("create" == action) {
@@ -54,12 +56,23 @@ class App {
             if(!isValid) {
                 return;
             }
-            //console.log(formData.values());
             let formData = new FormData(this.form);
             let newGoal = Goal.newFromForm(formData);
-            // let goal = LocalStorage.save(newGoal);
-            // LocalStorage.save should also append an index variable to access specific goals
-            return;
+            LocalStorage.store(GOAL_LIST_NAME, newGoal);
+
+            // Run this by team to see if good idea, works well for testing so might do over console logs.
+            alert("Goal successfully added to local storage.");
+            return new App();
+        }
+
+        if ("clearGoals" == action) {
+            this.$clearConfirmBtn.classList.toggle("visually-hidden");
+        }
+
+        if ("clearConfirm" == action) {
+            this.$clearConfirmBtn.classList.toggle("visually-hidden");
+            LocalStorage.clear(GOAL_LIST_NAME);
+            return new App();
         }
 
         if ("ux-toggle-goal-form" == action) {
@@ -82,18 +95,6 @@ class App {
             QuoteGen.refresh();
             return;
         }
-        
-        //
-        // <icon data-action="delete-goal" data-index="1" />
-        // One event listener to show previously stored event
-        // Another event listener to hide details
-
-        // one event listener to delete events.
-        /*
-        for (var index = 0; index < this.savedGoals.length; index++) {
-            this.$onCarots[index].onclick = this.showDetails.bind(this, index);
-            this.$offCarots[index].onclick = this.hideDetails.bind(this, index);
-        }/**/
     }
 
     loadGoals() {
@@ -114,9 +115,11 @@ class App {
 
     renderGoals(goals) {
         var goalHtml = "";
+        var tempGoalObj;
 
         for (var index = 0; index < goals.length; index++) {
-            goalHtml += goals[index].render(index);
+            tempGoalObj = new Goal(goals[index]);
+            goalHtml += tempGoalObj.render(index);
         }
 
         this.$goalList.innerHTML = goalHtml;
