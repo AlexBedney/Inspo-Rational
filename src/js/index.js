@@ -7,10 +7,10 @@ import 'bootstrap';
 
 // Import Application
 import App from './App';
-import QuoteGen from './QuoteGen';
+import Quote from './Quote';
 
 window.addEventListener("load", ()=>{
-    var quoteInit = new QuoteGen();
+    Quote.loadStorageWithQuotes(10);
     var indexInit = new App();
     document.addEventListener("click", indexInit);
 }

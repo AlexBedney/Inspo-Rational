@@ -1,5 +1,5 @@
 import Goal from "./Goal";
-import QuoteGen from "./QuoteGen";
+import Quote from "./Quote";
 import LocalStorage from "./LocalStorage";
 const GOAL_LIST_NAME = "goalsList";
 
@@ -92,7 +92,7 @@ class App {
         }
     
         if ("refreshQuote" == action) {
-            QuoteGen.refresh();
+            Quote.refresh();
             return;
         }
     }
