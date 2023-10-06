@@ -95,15 +95,9 @@ class App {
     
         if ("refreshQuote" == action) {
             let indexInt = parseInt(index);
-            if (indexInt == QUOTE_COUNT - 2) {
-                Quote.loadStorageWithQuotes(QUOTE_COUNT);
-                data.index = 0;
-                let newQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, 0);
-                Quote.render(newQuote);
-                return;
-            }
-            data.index = "" + (indexInt + 1);
-            let newQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, indexInt + 1);
+            indexInt == QUOTE_COUNT - 2 ? indexInt = 0 : indexInt = indexInt + 1;
+            data.index = "" + (indexInt)
+            let newQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, indexInt);
             Quote.render(newQuote);
             return;
         }
