@@ -9,7 +9,6 @@ class App {
     // constructor to initialize all global vars and methods
     constructor() {
         this.$submitBtn = document.getElementById("submitButton");
-        this.$goalList = document.getElementById("goalList");
         this.$goalDelete = document.getElementsByName("deleteGoal");
         this.$addGoalBtn = document.getElementById("addGoal");
         this.$goalForm = document.getElementById("goalForm");
@@ -24,13 +23,11 @@ class App {
         this.addGoalBtn = this.$addGoalBtn;
 
         // if LcoalStorage has nothing, make a default array to set it to
-        if (LocalStorage.getArray(GOAL_LIST_NAME).length == 0) {
-            LocalStorage.setLocalStorage(GOAL_LIST_NAME, [Goal.newDefaultGoal()]);
+        if (LocalStorage.isEmpty(GOAL_LIST_NAME)) {
+            LocalStorage.add(GOAL_LIST_NAME, Goal.newDefaultGoal());
         }
-
-        this.savedGoals = LocalStorage.getArray(GOAL_LIST_NAME);
         
-        this.renderGoals(this.savedGoals);
+        App.renderGoals();
     }
 
     handleEvent(e) {
@@ -50,7 +47,7 @@ class App {
         if ("delete" == action) {
             LocalStorage.delete(GOAL_LIST_NAME, this.savedGoals, this.savedGoals[index]);
             alert("Deleted one of your goals.");
-            return new App();
+            return App.renderGoals();
         }
 
         if("create" == action) {
@@ -60,11 +57,11 @@ class App {
             }
             let formData = new FormData(this.form);
             let newGoal = Goal.newFromForm(formData);
-            LocalStorage.store(GOAL_LIST_NAME, newGoal);
+            LocalStorage.add(GOAL_LIST_NAME, newGoal);
 
             // Run this by team to see if good idea, works well for testing so might do over console logs.
             alert("Goal successfully added to local storage.");
-            return new App();
+            return App.renderGoals();
         }
 
         if ("clearGoals" == action) {
@@ -74,7 +71,7 @@ class App {
         if ("clearConfirm" == action) {
             this.$clearConfirmBtn.classList.toggle("visually-hidden");
             LocalStorage.clear(GOAL_LIST_NAME);
-            return new App();
+            return App.renderGoals();
         }
 
         if ("ux-toggle-goal-form" == action) {
@@ -97,7 +94,7 @@ class App {
             let indexInt = parseInt(index);
             indexInt == QUOTE_COUNT - 2 ? indexInt = 0 : indexInt = indexInt + 1;
             data.index = "" + (indexInt)
-            let newQuote = LocalStorage.getSingleObject(QUOTE_LIST_NAME, indexInt);
+            let newQuote = LocalStorage.getItemAt(QUOTE_LIST_NAME, indexInt);
             Quote.render(newQuote);
             return;
         }
@@ -119,7 +116,9 @@ class App {
         return newSavedGoals;
     }
 
-    renderGoals(goals) {
+    static renderGoals() {
+        let goals = LocalStorage.getItems(GOAL_LIST_NAME);
+        let $goalList = document.getElementById("goalList");
         var goalHtml = "";
         var tempGoalObj;
 
@@ -128,7 +127,7 @@ class App {
             goalHtml += tempGoalObj.render(index);
         }
 
-        this.$goalList.innerHTML = goalHtml;
+        $goalList.innerHTML = goalHtml;
     }
 }
 

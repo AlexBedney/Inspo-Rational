@@ -1,55 +1,70 @@
+import Goal from "./Goal";
+import Quote from "./Quote";
 // Class allowing access methods to alter localStorage arrays by name
 class LocalStorage {
     // Default constructor that doesn't do anything
     constructor() {}
 
     // Grabs one object from the passed in list and index of localStorage and returns it
-    static getSingleObject(arrayName, index) {
-        let objs = this.getArray(arrayName);
+    static getItemAt(name, index) {
+        let objs = this.getItems(name);
         return objs[index];
     }
 
-    // returns a array with the name passed in, will return empty array if null
-    static getArray(arrayName) {
-        return !localStorage[arrayName] ? [] : this.getParsedLocalStorage(arrayName);
+    static getFirst(name) {
+        return LocalStorage.getItems(name).shift();
     }
 
-    // Setting localStorage array to contain JSON objects from passed in array
-    static setLocalStorage(arrayName, objs) {
-        localStorage[arrayName] = this.toJson(objs);
+    static getLast(name) {
+        return LocalStorage.getItems(name).pop();
     }
-    
-    // returns the passed array name parsed to JSON
-    static getParsedLocalStorage(arrayName) {
-        return JSON.parse(localStorage[arrayName]);
+
+    // returns a array with the name passed in, will return empty array if null
+    static getItems(name) {
+        let items = !localStorage[name] ? [] : JSON.parse(localStorage[name]);
+        return items.map((o)=>{
+            // return o.type != null ? new o.type(o) : o;
+            return o;
+        });
+    }
+
+    // Setting localStorage array to contain JSON object(s) from passed in array
+    static add(name, objs) {
+        let existing = LocalStorage.has(name) ? LocalStorage.getItems(name) : [];
+        objs = Array.isArray(objs) ? objs : [objs];
+        let newArray = existing.concat(objs);
+        localStorage[name] = LocalStorage.toJson(newArray);
+    }
+
+    static isEmpty(name) {
+        let items = LocalStorage.getItems(name);
+        return items.length == 0;
+    }
+
+    static has(name) {
+        return localStorage[name];
     }
 
     // Turns passed object array to JSON stringified array, if object doesn't have toJson() method, it doesn't alter it
     static toJson(objs) {
         let willBeSerialized = objs.map(function(o) {
-            return o.toJson ? o.toJson() : o;
+            let obj = o.toJson ? o.toJson() : o;
+            obj.type = o.constructor.name;
+            return obj;
         });
         return JSON.stringify(willBeSerialized);
     }
 
     // Deletes an object from a locally stored array
-    static delete(arrayName, objs, obj) {
+    static delete(name, objs, obj) {
         let objIndex = objs.indexOf(obj);
         objs.splice(objIndex, 1);
-        this.setLocalStorage(arrayName, objs);
-    }
-
-    // Takes in an object, and stores it into localStorage
-    static store(arrayName, obj) {
-        let objs = this.getParsedLocalStorage(arrayName);
-        objs.push(obj);
-
-        this.setLocalStorage(arrayName, objs);
+        LocalStorage.add(name, objs);
     }
 
     // Clears a passed in last name from localStorage
-    static clear(arrayName) {
-        localStorage.removeItem(arrayName);
+    static clear(name) {
+        localStorage.removeItem(name);
     }
 }
 
